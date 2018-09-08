@@ -309,7 +309,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             onTransitionEnd={containerHandler}>
             {
               elements.map(el => {
-                return React.cloneElement(el, { animating });
+                return React.cloneElement(el, { animating: animating });
               })
             }
           </div>
