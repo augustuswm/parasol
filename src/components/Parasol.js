@@ -307,11 +307,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             onTouchMove={touchMoveHandler}
             onWheel={wheelHandler}
             onTransitionEnd={containerHandler}>
-            {
-              elements.map((E: *) => {
-                return <E animating={animating} />;
-              })
-            }
+            {elements}
           </div>
         </div>
         {hasOverflow && <div className="parasol-control parasol-control-right" onClick={nextHandler}/>}

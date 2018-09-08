@@ -355,11 +355,7 @@ function (_React$Component) {
         onTouchMove: touchMoveHandler,
         onWheel: wheelHandler,
         onTransitionEnd: containerHandler
-      }, elements.map(function (E) {
-        return createElement(E, {
-          animating: animating
-        });
-      }))), hasOverflow && createElement("div", {
+      }, elements)), hasOverflow && createElement("div", {
         className: "parasol-control parasol-control-right",
         onClick: nextHandler
       }));
