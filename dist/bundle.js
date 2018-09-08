@@ -1,0 +1,380 @@
+import { createElement, Component } from 'react';
+import memoize from 'memoize-one';
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
+
+function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
+  return _getPrototypeOf(o);
+}
+
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (typeof call === "object" || typeof call === "function")) {
+    return call;
+  }
+
+  return _assertThisInitialized(self);
+}
+
+//      
+function gcd(a, b) {
+  if (!b) {
+    return a;
+  }
+
+  return gcd(b, a % b);
+}
+function noop() {}
+
+var debounce = require('lodash.debounce');
+var Parasol =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Parasol, _React$Component);
+
+  function Parasol(props) {
+    var _this;
+
+    _classCallCheck(this, Parasol);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Parasol).call(this, props));
+    _this.state = {
+      animating: false,
+      animationDirection: null,
+      page: 1,
+      pageSize: 1,
+      touchXStart: 0
+    };
+    _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.moveRight = _this.moveRight.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.pages = memoize(_this.pages);
+    _this.resizeHandler = debounce(_this.pageSizeHandler.bind(_assertThisInitialized(_assertThisInitialized(_this))), _this.props.resizeDebounceDelay);
+    _this.splitBreakpoints = memoize(_this.splitBreakpoints);
+    _this.startTouch = _this.startTouch.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.touchDrag = _this.touchDrag.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.wheelHandler = _this.wheelHandler.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    return _this;
+  }
+
+  _createClass(Parasol, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      // Once mounted, bind the window resize handler
+      window.addEventListener('resize', this.resizeHandler); // Bind a handler to prevent screen shaking on mac
+
+      document && document.body && document.body.addEventListener('wheel', Parasol.shakeHandler);
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      // On unmount, unbind the window resize handler
+      window.removeEventListener('resize', this.resizeHandler); // Unbind the screen shake handler
+
+      document && document.body && document.body.removeEventListener('wheel', Parasol.shakeHandler);
+    }
+  }, {
+    key: "splitBreakpoints",
+    value: function splitBreakpoints(breakpoints) {
+      var base = {
+        widths: [],
+        sizes: []
+      };
+      return breakpoints.reduce(function (dimensions, breakpoint) {
+        dimensions.widths.push(breakpoint[0]);
+        dimensions.sizes.push(breakpoint[1]);
+        return dimensions;
+      }, base);
+    }
+  }, {
+    key: "pages",
+    value: function pages(elementsCount, pageSize) {
+      return elementsCount / gcd(pageSize, elementsCount);
+    }
+  }, {
+    key: "moveLeft",
+    value: function moveLeft() {
+      this.setState(function () {
+        return {
+          animating: true,
+          animationDirection: 'left'
+        };
+      });
+    }
+  }, {
+    key: "moveRight",
+    value: function moveRight() {
+      this.setState(function () {
+        return {
+          animating: true,
+          animationDirection: 'right'
+        };
+      });
+    }
+  }, {
+    key: "wheelHandler",
+    value: function wheelHandler(event) {
+      event.deltaX < -this.props.sensitivity && this.moveLeft() || event.deltaX > this.props.sensitivity && this.moveRight();
+    }
+  }, {
+    key: "pageSizeHandler",
+    value: function pageSizeHandler() {
+      // Make sure the document is available
+      if (document.documentElement) {
+        // Get the window width
+        var width = document.documentElement.clientWidth; // Split breakpoints into their individual parts
+
+        var dims = this.splitBreakpoints(this.props.breakpoints); // Determine the possible window sizes
+
+        var sKeys = dims.widths.filter(function (w) {
+          return width > w;
+        }); // Select the largest and get the associated page size
+
+        var newPageSize = dims.sizes[dims.widths.length - sKeys.length]; // If the new page size is different than the existing size then update
+
+        if (this.state.pageSize !== newPageSize) {
+          this.setState(function () {
+            return {
+              pageSize: newPageSize
+            };
+          });
+        }
+      }
+    }
+  }, {
+    key: "paginationEndHandler",
+    value: function paginationEndHandler(page) {
+      return function (event) {
+        // Check to make sure that any bubbling events are ignored
+        if (event.target === event.currentTarget) {
+          this.setState(function () {
+            return {
+              animating: false,
+              animationDirection: null,
+              page: page
+            };
+          });
+        }
+      }.bind(this);
+    }
+  }, {
+    key: "startTouch",
+    value: function startTouch(event) {
+      // If there are no touch events, fail out
+      if (!event.touches || event.touches.length < 1) {
+        return;
+      }
+
+      this.setState(function () {
+        return {
+          touchXStart: event.touches[0].clientX
+        };
+      });
+    }
+  }, {
+    key: "touchDrag",
+    value: function touchDrag(event) {
+      // If there are no touch events, fail out
+      if (!event.touches || event.touches.length < 1) {
+        return;
+      } // If there is no starting x coordinate, fail out
+
+
+      if (this.state.touchXStart === null) {
+        return;
+      } // Listen for any point in a touch drag that should trigger the action
+
+
+      if (event.touches[0].clientX - this.state.touchXStart > this.props.sensitivity) {
+        this.moveLeft();
+      } else if (event.touches[0].clientX - this.state.touchXStart < -this.props.sensitivity) {
+        this.moveRight();
+      }
+    }
+  }, {
+    key: "containerClass",
+    value: function containerClass() {
+      var _this$state = this.state,
+          animating = _this$state.animating,
+          animationDirection = _this$state.animationDirection,
+          page = _this$state.page,
+          pageSize = _this$state.pageSize;
+      var hasOverflow = this.props.children.length > pageSize;
+      var containerClass = "parasol-container page-size-".concat(pageSize);
+
+      if (hasOverflow) {
+        containerClass += ' overflow';
+      }
+
+      if (animating && animationDirection) {
+        containerClass += ' animating';
+        containerClass += " animating-".concat(animationDirection);
+      }
+
+      return containerClass;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this$state2 = this.state,
+          animating = _this$state2.animating,
+          animationDirection = _this$state2.animationDirection,
+          page = _this$state2.page,
+          pageSize = _this$state2.pageSize;
+      var elements = this.props.children;
+      var pages = this.pages(elements.length, pageSize);
+      var hasOverflow = elements.length > pageSize;
+      var prevHandler = !animating ? this.moveLeft : noop;
+      var nextHandler = !animating ? this.moveRight : noop;
+      var touchStartHandler = !animating && hasOverflow ? this.startTouch : noop;
+      var touchMoveHandler = !animating && hasOverflow ? this.touchDrag : noop;
+      var wheelHandler = !animating && hasOverflow ? this.wheelHandler : noop;
+      var containerHandler = noop; // If there are more elements than a page size, then pagination is needed.
+      // To ensure there are enough elements for pagination, generate a list with
+      // three full pages
+
+      if (hasOverflow) {
+        elements = Parasol.computeElementList(elements, page, pageSize);
+      } // If the bar is in an animating state, then handle adding the animation
+      // styling, and post animation updates
+
+
+      if (animating && animationDirection) {
+        // Compute the next page that should be shown
+        var newPage = animationDirection === 'right' ? page + 1 : page - 1; // Perform bounds checks to make sure the next page is valid. If it is
+        // not then the new page value should wrap
+
+        if (newPage > pages) {
+          newPage = 1;
+        } else if (newPage < 1) {
+          newPage = pages;
+        } // Create the transition end handler based on the page that is being
+        // animating to
+
+
+        containerHandler = this.paginationEndHandler(newPage);
+      }
+
+      return createElement("div", {
+        className: "parasol parasol-carousel ".concat(hasOverflow && 'overflow' || '')
+      }, hasOverflow && createElement("div", {
+        className: "parasol-control parasol-control-left",
+        onClick: prevHandler
+      }), createElement("div", {
+        className: "clip-window"
+      }, createElement("div", {
+        className: this.containerClass(),
+        onTouchStart: touchStartHandler,
+        onTouchMove: touchMoveHandler,
+        onWheel: wheelHandler,
+        onTransitionEnd: containerHandler
+      }, elements)), hasOverflow && createElement("div", {
+        className: "parasol-control parasol-control-right",
+        onClick: nextHandler
+      }));
+    }
+  }], [{
+    key: "shakeHandler",
+    value: function shakeHandler(event) {
+      Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.preventDefault();
+    }
+  }, {
+    key: "computeElementList",
+    value: function computeElementList(elements, page, pageSize) {
+      // Determine the start location of the focus
+      var focusStart = (page - 1) * pageSize % elements.length;
+      var focusEnd = focusStart + pageSize; // Compute the area of the clips that will be visible on the current page
+
+      var focus = elements.slice(focusStart, focusStart + pageSize); // For clip lengths that do not align with the pages size, additional
+      // clips may be needed to pad out the focus area
+
+      var focusPadding = Math.max(0, pageSize - focus.length); // If the focus needs to be extended, add additional clips
+
+      if (focusPadding > 0) {
+        focus = focus.concat(elements.slice(0, focusPadding)); // If the focus area wrapped, then adjust the ending point
+
+        focusEnd = focusPadding;
+      } // Compute the list that follows the focus
+
+
+      var tail = elements.slice(focusEnd, focusEnd + pageSize); // If the tail is too short, pad from the start of the list
+
+      if (tail.length < pageSize) {
+        tail = tail.concat(elements.slice(0, pageSize - tail.length));
+      } // Compute the list that precedes the focus
+
+
+      var head = elements.slice(Math.max(0, focusStart - pageSize), focusStart); // If the head is too short, add clips from the end of the list
+
+      if (head.length < pageSize) {
+        head = elements.slice(-1 * (pageSize - head.length)).concat(head);
+      } // Finally combine the lists to create the displayable clip list
+
+
+      return head.concat(focus).concat(tail);
+    }
+  }]);
+
+  return Parasol;
+}(Component);
+Parasol.defaultProps = {
+  breakpoints: [[0, 3]],
+  children: [],
+  resizeDebounceDelay: 250,
+  sensitivity: 40
+};
+
+export default Parasol;
