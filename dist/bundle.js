@@ -1,4 +1,4 @@
-import { createElement, Component } from 'react';
+import { createElement, cloneElement, Component } from 'react';
 import memoize from 'memoize-one';
 
 function _classCallCheck(instance, Constructor) {
@@ -355,7 +355,11 @@ function (_React$Component) {
         onTouchMove: touchMoveHandler,
         onWheel: wheelHandler,
         onTransitionEnd: containerHandler
-      }, elements)), hasOverflow && createElement("div", {
+      }, elements.map(function (el) {
+        return cloneElement(el, {
+          animating: animating
+        });
+      }))), hasOverflow && createElement("div", {
         className: "parasol-control parasol-control-right",
         onClick: nextHandler
       }));
