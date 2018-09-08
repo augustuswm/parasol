@@ -63,6 +63,9 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
 
     // Bind a handler to prevent screen shaking on mac
     document && document.body && document.body.addEventListener('wheel', Parasol.shakeHandler);
+
+    // Run the resize handler a single time on mount
+    this.resizeHandler();
   }
 
   componentWillUnmount() {
