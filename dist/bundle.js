@@ -355,9 +355,12 @@ function (_React$Component) {
         onTouchMove: touchMoveHandler,
         onWheel: wheelHandler,
         onTransitionEnd: containerHandler
-      }, elements.map(function (el) {
+      }, elements.map(el, function (i) {
+        var inFocus = i - pageSize >= 0 && i + pageSize <= elements.length;
         return cloneElement(el, {
-          animating: animating
+          animating: animating,
+          position: i,
+          inFocus: inFocus
         });
       }))), hasOverflow && createElement("div", {
         className: "parasol-control parasol-control-right",
