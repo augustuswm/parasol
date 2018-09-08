@@ -50,18 +50,22 @@
 
 .parasol-carousel .parasol-container.page-size-2 > * {
   width: 50%;
+  display: inline-block;
 }
 
 .parasol-carousel .parasol-container.page-size-3 > * {
   width: 33.333%;
+  display: inline-block;
 }
 
 .parasol-carousel .parasol-container.page-size-4 > * {
   width: 25%;
+  display: inline-block;
 }
 
 .parasol-carousel .parasol-container.page-size-5 > * {
   width: 20%;
+  display: inline-block;
 }
 
 .parasol-carousel .parasol-container.overflow {
