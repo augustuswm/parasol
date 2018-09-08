@@ -355,7 +355,7 @@ function (_React$Component) {
         onTouchMove: touchMoveHandler,
         onWheel: wheelHandler,
         onTransitionEnd: containerHandler
-      }, elements.map(el, function (i) {
+      }, elements.map(function (el, i) {
         var inFocus = i - pageSize >= 0 && i + pageSize <= elements.length;
         return cloneElement(el, {
           animating: animating,
