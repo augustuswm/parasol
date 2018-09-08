@@ -356,7 +356,7 @@ function (_React$Component) {
         onWheel: wheelHandler,
         onTransitionEnd: containerHandler
       }, elements.map(function (el, i) {
-        var inFocus = i - pageSize >= 0 && i + pageSize <= elements.length;
+        var inFocus = i - pageSize >= 0 && i + pageSize < elements.length;
         return cloneElement(el, {
           animating: animating,
           position: i,

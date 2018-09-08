@@ -309,7 +309,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             onTransitionEnd={containerHandler}>
             {
               elements.map((el, i) => {
-                let inFocus = i - pageSize >= 0 && i + pageSize <= elements.length;
+                let inFocus = i - pageSize >= 0 && i + pageSize < elements.length;
                 return React.cloneElement(el, { animating: animating, position: i, inFocus: inFocus });
               })
             }
