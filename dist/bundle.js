@@ -80,6 +80,38 @@ function gcd(a, b) {
 }
 function noop() {}
 
+function styleInject(css, ref) {
+  if (ref === void 0) ref = {};
+  var insertAt = ref.insertAt;
+
+  if (!css || typeof document === 'undefined') {
+    return;
+  }
+
+  var head = document.head || document.getElementsByTagName('head')[0];
+  var style = document.createElement('style');
+  style.type = 'text/css';
+
+  if (insertAt === 'top') {
+    if (head.firstChild) {
+      head.insertBefore(style, head.firstChild);
+    } else {
+      head.appendChild(style);
+    }
+  } else {
+    head.appendChild(style);
+  }
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+}
+
+var css = ".parasol {\n  position: relative;\n  margin: 0 -6px;\n  touch-action: pan-y;\n}\n\n.parasol.parasol-carousel.overflow {\n  margin: 0;\n  padding: 0 4%;\n}\n\n.parasol-control {\n  position: absolute;\n  top: 0;\n  right: 0;\n  width: 4%;\n  height: 100%;\n  background: #000;\n  text-align: center;\n  font-size: 4em;\n  z-index: 2;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: flex-start;\n  padding-top: 25px;\n  text-transform: uppercase;\n  cursor: pointer;\n}\n\n.parasol-control-left {\n  left: 0;\n}\n\n.parasol-control-right {\n  right: 0;\n}\n\n.parasol-window {\n  overflow-x: visible;\n}\n\n/*.clipbar-list .clip-window {*/\n  /*overflow-x: scroll;*/\n/*}*/\n\n.parasol-container {\n  white-space: nowrap;\n}\n\n.parasol-carousel .parasol-container.page-size-2 > * {\n  width: 50%;\n}\n\n.parasol-carousel .parasol-container.page-size-3 > * {\n  width: 33.333%;\n}\n\n.parasol-carousel .parasol-container.page-size-4 > * {\n  width: 25%;\n}\n\n.parasol-carousel .parasol-container.page-size-5 > * {\n  width: 20%;\n}\n\n.parasol-carousel .parasol-container.overflow {\n transform: translate3d(-100%, 0, 0);\n}\n\n.parasol-carousel .parasol-container.animating {\n  transition: transform 1s ease 0s;\n}\n\n.parasol-carousel .parasol-container.animating-left {\n transform: translate3d(0, 0, 0);\n}\n\n.parasol-carousel .parasol-container.animating-right {\n transform: translate3d(-200%, 0, 0);\n}";
+styleInject(css);
+
 var debounce = require('lodash.debounce');
 var Parasol =
 /*#__PURE__*/
@@ -314,7 +346,7 @@ function (_React$Component) {
         className: "parasol-control parasol-control-left",
         onClick: prevHandler
       }), createElement("div", {
-        className: "clip-window"
+        className: "parasol-window"
       }, createElement("div", {
         className: this.containerClass(),
         onTouchStart: touchStartHandler,

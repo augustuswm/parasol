@@ -5,6 +5,7 @@ import memoize from 'memoize-one';
 let debounce = require('lodash.debounce');
 
 import { gcd, noop } from "../helpers";
+import './parasol.css';
 
 type AnimationDirection = 'left' | 'right';
 
@@ -296,7 +297,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     return (
       <div className={`parasol parasol-carousel ${hasOverflow && 'overflow' || ''}`}>
         {hasOverflow && <div className="parasol-control parasol-control-left" onClick={prevHandler} />}
-        <div className="clip-window">
+        <div className="parasol-window">
           <div
             className={this.containerClass()}
             onTouchStart={touchStartHandler}

@@ -1,5 +1,6 @@
 let babel = require('rollup-plugin-babel');
 let flow = require('rollup-plugin-flow');
+import postcss from 'rollup-plugin-postcss'
 
 // rollup.config.js
 export default {
@@ -10,6 +11,7 @@ export default {
   },
   plugins: [
     flow(),
+    postcss(),
     babel()
   ]
 };
