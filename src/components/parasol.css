@@ -64,6 +64,31 @@
   display: inline-block;
 }
 
+.parasol-carousel .parasol-container.page-size-6 > * {
+  width: 16.666%;
+  display: inline-block;
+}
+
+.parasol-carousel .parasol-container.page-size-7 > * {
+  width: 14.285%;
+  display: inline-block;
+}
+
+.parasol-carousel .parasol-container.page-size-8 > * {
+  width: 12.5%;
+  display: inline-block;
+}
+
+.parasol-carousel .parasol-container.page-size-9 > * {
+  width: 11.111%;
+  display: inline-block;
+}
+
+.parasol-carousel .parasol-container.page-size-10 > * {
+  width: 10%;
+  display: inline-block;
+}
+
 .parasol-carousel .parasol-container.overflow {
  transform: translate3d(-100%, 0, 0);
 }

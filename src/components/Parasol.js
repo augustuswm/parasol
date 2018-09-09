@@ -310,7 +310,8 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             {
               elements.map((el, i) => {
                 let viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
-                return React.cloneElement(el, { animating: animating, position: i, viewPosition: viewPosition });
+                let baseKey = typeof el.key === 'string' ? el.key : '';
+                return React.cloneElement(el, { key: `${baseKey}-i`, animating: animating, position: i, viewPosition: viewPosition });
               })
             }
           </div>
