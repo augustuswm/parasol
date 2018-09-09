@@ -20,7 +20,8 @@ type ParasolProps = {|
   breakpoints: Array<Breakpoint>,
   children: Array<React.Node>,
   resizeDebounceDelay: number,
-  sensitivity: number
+  sensitivity: number,
+  onScroll: ?Function
 |};
 
 type ParasolState = {|
@@ -100,6 +101,10 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
   moveLeft: () => void;
   moveLeft() {
     this.setState(() => {
+      if (this.props.onScroll && typeof this.props.onScroll === 'function') {
+        this.props.onScroll();
+      }
+
       return {
         animating: true,
         animationDirection: 'left'
@@ -110,6 +115,10 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
   moveRight: () => void;
   moveRight() {
     this.setState(() => {
+      if (this.props.onScroll && typeof this.props.onScroll === 'function') {
+        this.props.onScroll();
+      }
+
       return {
         animating: true,
         animationDirection: 'right'
@@ -326,5 +335,6 @@ Parasol.defaultProps = {
   breakpoints: [[0, 3]],
   children: [],
   resizeDebounceDelay: 250,
-  sensitivity: 40
+  sensitivity: 40,
+  onScroll: noop
 };

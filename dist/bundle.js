@@ -181,7 +181,13 @@ function (_React$Component) {
   }, {
     key: "moveLeft",
     value: function moveLeft() {
+      var _this2 = this;
+
       this.setState(function () {
+        if (_this2.props.onScroll && typeof _this2.props.onScroll === 'function') {
+          _this2.props.onScroll();
+        }
+
         return {
           animating: true,
           animationDirection: 'left'
@@ -191,7 +197,13 @@ function (_React$Component) {
   }, {
     key: "moveRight",
     value: function moveRight() {
+      var _this3 = this;
+
       this.setState(function () {
+        if (_this3.props.onScroll && typeof _this3.props.onScroll === 'function') {
+          _this3.props.onScroll();
+        }
+
         return {
           animating: true,
           animationDirection: 'right'
@@ -417,7 +429,8 @@ Parasol.defaultProps = {
   breakpoints: [[0, 3]],
   children: [],
   resizeDebounceDelay: 250,
-  sensitivity: 40
+  sensitivity: 40,
+  onScroll: noop
 };
 
 export default Parasol;
