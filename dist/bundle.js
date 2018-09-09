@@ -374,7 +374,8 @@ function (_React$Component) {
           key: "".concat(baseKey, "-").concat(i),
           animating: animating,
           position: i,
-          viewPosition: viewPosition
+          viewPosition: viewPosition,
+          pageSize: pageSize
         });
       }))), hasOverflow && createElement("div", {
         className: "parasol-control parasol-control-right",
