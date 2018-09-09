@@ -264,9 +264,10 @@ function (_React$Component) {
         return;
       }
 
+      var startX = event.touches[0].clientX;
       this.setState(function () {
         return {
-          touchXStart: event.touches[0].clientX
+          touchXStart: startX
         };
       });
     }
