@@ -359,7 +359,7 @@ function (_React$Component) {
         var viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
         var baseKey = typeof el.key === 'string' ? el.key : '';
         return cloneElement(el, {
-          key: "".concat(baseKey, "-i"),
+          key: "".concat(baseKey, "-").concat(i),
           animating: animating,
           position: i,
           viewPosition: viewPosition
