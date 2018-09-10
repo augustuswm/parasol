@@ -202,9 +202,9 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     }
 
     // Listen for any point in a touch drag that should trigger the action
-    if ((event.touches[0].clientX - this.state.touchXStart) > this.props.sensitivity) {
+    if ((event.touches.item(0).clientX - this.state.touchXStart) > this.props.sensitivity) {
       this.moveLeft();
-    } else if ((event.touches[0].clientX - this.state.touchXStart) < -this.props.sensitivity) {
+    } else if ((event.touches.item(0).clientX - this.state.touchXStart) < -this.props.sensitivity) {
       this.moveRight();
     }
   }
