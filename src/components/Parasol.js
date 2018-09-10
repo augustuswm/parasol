@@ -181,7 +181,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
       return;
     }
 
-    let startX = event.touches[0].clientX;
+    let startX = event.touches.item(0).clientX;
 
     this.setState(() => {
       return { touchXStart: startX };
