@@ -4,12 +4,12 @@
   touch-action: pan-y;
 }
 
-.parasol.parasol-carousel.overflow {
+.parasol.parasol-carousel {
   margin: 0;
   padding: 0 4%;
 }
 
-.parasol-control {
+.parasol-cap {
   position: absolute;
   top: 0;
   right: 0;
@@ -28,11 +28,11 @@
   cursor: pointer;
 }
 
-.parasol-control-left {
+.parasol-cap-left {
   left: 0;
 }
 
-.parasol-control-right {
+.parasol-cap-right {
   right: 0;
 }
 

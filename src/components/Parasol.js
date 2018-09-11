@@ -309,8 +309,8 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     }
 
     return (
-      <div className={`parasol parasol-carousel ${hasOverflow && 'overflow' || ''}`}>
-        {hasOverflow && <div className="parasol-control parasol-control-left" onClick={prevHandler} />}
+      <div className={`parasol parasol-carousel`}>
+        <div className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`} onClick={prevHandler} />
         <div className="parasol-window">
           <div
             className={this.containerClass()}
@@ -333,7 +333,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             }
           </div>
         </div>
-        {hasOverflow && <div className="parasol-control parasol-control-right" onClick={nextHandler}/>}
+        <div className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`} onClick={prevHandler} />
       </div>
     );
   }

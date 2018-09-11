@@ -109,7 +109,7 @@ function styleInject(css, ref) {
   }
 }
 
-var css = ".parasol {\n  position: relative;\n  margin: 0 -6px;\n  touch-action: pan-y;\n}\n\n.parasol.parasol-carousel.overflow {\n  margin: 0;\n  padding: 0 4%;\n}\n\n.parasol-control {\n  position: absolute;\n  top: 0;\n  right: 0;\n  width: 4%;\n  height: 100%;\n  background: #000;\n  text-align: center;\n  font-size: 4em;\n  z-index: 2;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: flex-start;\n  padding-top: 25px;\n  text-transform: uppercase;\n  cursor: pointer;\n}\n\n.parasol-control-left {\n  left: 0;\n}\n\n.parasol-control-right {\n  right: 0;\n}\n\n.parasol-window {\n  overflow-x: visible;\n}\n\n.parasol-container {\n  white-space: nowrap;\n}\n\n.parasol-carousel .parasol-container.page-size-2 > * {\n  width: 50%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-3 > * {\n  width: 33.333%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-4 > * {\n  width: 25%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-5 > * {\n  width: 20%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-6 > * {\n  width: 16.666%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-7 > * {\n  width: 14.285%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-8 > * {\n  width: 12.5%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-9 > * {\n  width: 11.111%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-10 > * {\n  width: 10%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.overflow {\n transform: translate3d(-100%, 0, 0);\n}\n\n.parasol-carousel .parasol-container.animating {\n  transition: transform 1s ease 0s;\n}\n\n.parasol-carousel .parasol-container.animating-left {\n transform: translate3d(0, 0, 0);\n}\n\n.parasol-carousel .parasol-container.animating-right {\n transform: translate3d(-200%, 0, 0);\n}";
+var css = ".parasol {\n  position: relative;\n  margin: 0 -6px;\n  touch-action: pan-y;\n}\n\n.parasol.parasol-carousel {\n  margin: 0;\n  padding: 0 4%;\n}\n\n.parasol-cap {\n  position: absolute;\n  top: 0;\n  right: 0;\n  width: 4%;\n  height: 100%;\n  background: #000;\n  text-align: center;\n  font-size: 4em;\n  z-index: 2;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: flex-start;\n  padding-top: 25px;\n  text-transform: uppercase;\n  cursor: pointer;\n}\n\n.parasol-cap-left {\n  left: 0;\n}\n\n.parasol-cap-right {\n  right: 0;\n}\n\n.parasol-window {\n  overflow-x: visible;\n}\n\n.parasol-container {\n  white-space: nowrap;\n}\n\n.parasol-carousel .parasol-container.page-size-2 > * {\n  width: 50%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-3 > * {\n  width: 33.333%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-4 > * {\n  width: 25%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-5 > * {\n  width: 20%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-6 > * {\n  width: 16.666%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-7 > * {\n  width: 14.285%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-8 > * {\n  width: 12.5%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-9 > * {\n  width: 11.111%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.page-size-10 > * {\n  width: 10%;\n  display: inline-block;\n}\n\n.parasol-carousel .parasol-container.overflow {\n transform: translate3d(-100%, 0, 0);\n}\n\n.parasol-carousel .parasol-container.animating {\n  transition: transform 1s ease 0s;\n}\n\n.parasol-carousel .parasol-container.animating-left {\n transform: translate3d(0, 0, 0);\n}\n\n.parasol-carousel .parasol-container.animating-right {\n transform: translate3d(-200%, 0, 0);\n}";
 styleInject(css);
 
 var debounce = require('lodash.debounce');
@@ -356,9 +356,9 @@ function (_React$Component) {
       }
 
       return createElement("div", {
-        className: "parasol parasol-carousel ".concat(hasOverflow && 'overflow' || '')
-      }, hasOverflow && createElement("div", {
-        className: "parasol-control parasol-control-left",
+        className: "parasol parasol-carousel"
+      }, createElement("div", {
+        className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
         onClick: prevHandler
       }), createElement("div", {
         className: "parasol-window"
@@ -378,9 +378,9 @@ function (_React$Component) {
           viewPosition: viewPosition,
           pageSize: pageSize
         });
-      }))), hasOverflow && createElement("div", {
-        className: "parasol-control parasol-control-right",
-        onClick: nextHandler
+      }))), createElement("div", {
+        className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
+        onClick: prevHandler
       }));
     }
   }], [{
