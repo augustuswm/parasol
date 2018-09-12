@@ -320,7 +320,14 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             onTransitionEnd={containerHandler}>
             {
               elements.map((el, i) => {
-                let viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
+                let viewPosition;
+
+                if (hasOverflow) {
+                  viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
+                } else {
+                  viewPosition = i;
+                }
+
                 let baseKey = typeof el.key === 'string' ? el.key : '';
                 return React.cloneElement(el, {
                   key: `${baseKey}-${i}`,
@@ -333,7 +340,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             }
           </div>
         </div>
-        <div className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`} onClick={prevHandler} />
+        <div className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`} onClick={nextHandler} />
       </div>
     );
   }

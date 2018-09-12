@@ -369,7 +369,14 @@ function (_React$Component) {
         onWheel: wheelHandler,
         onTransitionEnd: containerHandler
       }, elements.map(function (el, i) {
-        var viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
+        var viewPosition;
+
+        if (hasOverflow) {
+          viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
+        } else {
+          viewPosition = i;
+        }
+
         var baseKey = typeof el.key === 'string' ? el.key : '';
         return cloneElement(el, {
           key: "".concat(baseKey, "-").concat(i),
@@ -380,7 +387,7 @@ function (_React$Component) {
         });
       }))), createElement("div", {
         className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
-        onClick: prevHandler
+        onClick: nextHandler
       }));
     }
   }], [{
