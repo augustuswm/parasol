@@ -1,5 +1,5 @@
 {
-  "name": "parasol",
+  "name": "react-parasol",
   "version": "0.0.1",
   "description": "A carousel for React",
   "main": "dist/bundle.js",
