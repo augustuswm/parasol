@@ -21,7 +21,12 @@ type ParasolProps = {|
   children: Array<React.Node>,
   resizeDebounceDelay: number,
   sensitivity: number,
-  onScroll: ?Function
+  onScroll: ?Function,
+  onMouseEnter?: Function,
+  onMouseLeave?: Function,
+  onMouseMove?: Function,
+  onMouseOut?: Function,
+  onMouseOver?: Function
 |};
 
 type ParasolState = {|
@@ -309,7 +314,14 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     }
 
     return (
-      <div className={`parasol parasol-carousel`}>
+      <div
+        className={`parasol parasol-carousel`}
+        onMouseEnter={this.props.onMouseEnter}
+        onMouseLeave={this.props.onMouseLeave}
+        onMouseMove={this.props.onMouseMove}
+        onMouseOut={this.props.onMouseOut}
+        onMouseOver={this.props.onMouseOver}
+      >
         <div className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`} onClick={prevHandler} />
         <div className="parasol-window">
           <div
