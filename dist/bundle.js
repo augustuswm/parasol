@@ -356,7 +356,12 @@ function (_React$Component) {
       }
 
       return createElement("div", {
-        className: "parasol parasol-carousel"
+        className: "parasol parasol-carousel",
+        onMouseEnter: this.props.onMouseEnter,
+        onMouseLeave: this.props.onMouseLeave,
+        onMouseMove: this.props.onMouseMove,
+        onMouseOut: this.props.onMouseOut,
+        onMouseOver: this.props.onMouseOver
       }, createElement("div", {
         className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
         onClick: prevHandler
