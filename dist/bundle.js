@@ -364,7 +364,9 @@ function (_React$Component) {
         onMouseOver: this.props.onMouseOver
       }, createElement("div", {
         className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
-        onClick: prevHandler
+        onClick: prevHandler,
+        tabIndex: this.props.prevTabIndex || 0,
+        "aria-label": this.props.previousLabel || 'Previous Items'
       }), createElement("div", {
         className: "parasol-window"
       }, createElement("div", {
@@ -392,7 +394,9 @@ function (_React$Component) {
         });
       }))), createElement("div", {
         className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
-        onClick: nextHandler
+        onClick: nextHandler,
+        tabIndex: this.props.nextTabIndex || 0,
+        "aria-label": this.props.nextLabel || 'Next Items'
       }));
     }
   }], [{

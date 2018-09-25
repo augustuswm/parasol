@@ -26,7 +26,11 @@ type ParasolProps = {|
   onMouseLeave?: Function,
   onMouseMove?: Function,
   onMouseOut?: Function,
-  onMouseOver?: Function
+  onMouseOver?: Function,
+  previousLabel?: String,
+  prevTabIndex?: number,
+  nextLabel?: String,
+  nextTabIndex?: number
 |};
 
 type ParasolState = {|
@@ -322,7 +326,11 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
         onMouseOut={this.props.onMouseOut}
         onMouseOver={this.props.onMouseOver}
       >
-        <div className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`} onClick={prevHandler} />
+        <div
+          className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`}
+          onClick={prevHandler}
+          tabIndex={this.props.prevTabIndex || 0}
+          aria-label={this.props.previousLabel || 'Previous Items'} />
         <div className="parasol-window">
           <div
             className={this.containerClass()}
@@ -352,7 +360,11 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             }
           </div>
         </div>
-        <div className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`} onClick={nextHandler} />
+        <div
+          className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`}
+          onClick={nextHandler}
+          tabIndex={this.props.nextTabIndex || 0}
+          aria-label={this.props.nextLabel || 'Next Items'} />
       </div>
     );
   }
