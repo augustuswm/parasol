@@ -326,7 +326,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
         onMouseOut={this.props.onMouseOut}
         onMouseOver={this.props.onMouseOver}
       >
-        <div
+        <button
           className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`}
           onClick={prevHandler}
           tabIndex={this.props.prevTabIndex || 0}
@@ -360,7 +360,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
             }
           </div>
         </div>
-        <div
+        <button
           className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`}
           onClick={nextHandler}
           tabIndex={this.props.nextTabIndex || 0}

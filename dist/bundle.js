@@ -362,7 +362,7 @@ function (_React$Component) {
         onMouseMove: this.props.onMouseMove,
         onMouseOut: this.props.onMouseOut,
         onMouseOver: this.props.onMouseOver
-      }, createElement("div", {
+      }, createElement("button", {
         className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
         onClick: prevHandler,
         tabIndex: this.props.prevTabIndex || 0,
@@ -392,7 +392,7 @@ function (_React$Component) {
           viewPosition: viewPosition,
           pageSize: pageSize
         });
-      }))), createElement("div", {
+      }))), createElement("button", {
         className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
         onClick: nextHandler,
         tabIndex: this.props.nextTabIndex || 0,
