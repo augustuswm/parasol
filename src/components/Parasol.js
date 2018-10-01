@@ -50,7 +50,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
       animating: false,
       animationDirection: null,
       page: 1,
-      pageSize: 1,
+      pageSize: this.computePageSize(),
       touchXStart: 0
     };
 
@@ -141,7 +141,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     event.deltaX > this.props.sensitivity && this.moveRight();
   }
 
-  pageSizeHandler() {
+  computePageSize() {
 
     // Make sure the document is available
     if (document.documentElement) {
@@ -156,16 +156,23 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
       let sKeys = dims.widths.filter(w => width > w);
 
       // Select the largest and get the associated page size
-      let newPageSize = dims.sizes[dims.widths.length - sKeys.length];
+      return dims.sizes[dims.widths.length - sKeys.length];
+    }
 
-      // If the new page size is different than the existing size then update
-      if (this.state.pageSize !== newPageSize) {
-        this.setState(() => {
-          return {
-            pageSize: newPageSize
-          }
-        });
-      }
+    return 0;
+  }
+
+  pageSizeHandler() {
+
+    let newPageSize = this.computePageSize();
+
+    // If the new page size is different than the existing size then update
+    if (this.state.pageSize !== newPageSize) {
+      this.setState(() => {
+        return {
+          pageSize: newPageSize
+        }
+      });
     }
   }
 

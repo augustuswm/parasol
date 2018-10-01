@@ -128,7 +128,7 @@ function (_React$Component) {
       animating: false,
       animationDirection: null,
       page: 1,
-      pageSize: 1,
+      pageSize: _this.computePageSize(),
       touchXStart: 0
     };
     _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -216,8 +216,8 @@ function (_React$Component) {
       event.deltaX < -this.props.sensitivity && this.moveLeft() || event.deltaX > this.props.sensitivity && this.moveRight();
     }
   }, {
-    key: "pageSizeHandler",
-    value: function pageSizeHandler() {
+    key: "computePageSize",
+    value: function computePageSize() {
       // Make sure the document is available
       if (document.documentElement) {
         // Get the window width
@@ -229,15 +229,22 @@ function (_React$Component) {
           return width > w;
         }); // Select the largest and get the associated page size
 
-        var newPageSize = dims.sizes[dims.widths.length - sKeys.length]; // If the new page size is different than the existing size then update
+        return dims.sizes[dims.widths.length - sKeys.length];
+      }
 
-        if (this.state.pageSize !== newPageSize) {
-          this.setState(function () {
-            return {
-              pageSize: newPageSize
-            };
-          });
-        }
+      return 0;
+    }
+  }, {
+    key: "pageSizeHandler",
+    value: function pageSizeHandler() {
+      var newPageSize = this.computePageSize(); // If the new page size is different than the existing size then update
+
+      if (this.state.pageSize !== newPageSize) {
+        this.setState(function () {
+          return {
+            pageSize: newPageSize
+          };
+        });
       }
     }
   }, {
