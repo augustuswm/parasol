@@ -257,6 +257,8 @@ function (_React$Component) {
         // Check to make sure that any bubbling events are ignored
         if (event.target === event.currentTarget) {
           this.setState(function () {
+            console.log(_this4.firstElement, _this4.firstElement.current);
+
             if (_this4.firstElement && _this4.firstElement.current && typeof _this4.firstElement.current.focus === 'function') {
               _this4.firstElement.current.focus();
             }
