@@ -185,13 +185,11 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
       // Check to make sure that any bubbling events are ignored
       if (event.target === event.currentTarget) {
         this.setState(() => {
-          setTimeout(function () {
+          setTimeout(() => {
             if (this.firstElement && this.firstElement.current && typeof this.firstElement.current.focus === 'function') {
-              console.log(this.firstElement.current);
-              console.log(this.firstElement.current.focus());
               this.firstElement.current.focus();
             }
-          }, 1000);
+          }, 0);
 
           return { animating: false, animationDirection: null, page: page };
         });
