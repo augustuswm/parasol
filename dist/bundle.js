@@ -410,7 +410,7 @@ function (_React$Component) {
         };
 
         if (viewPosition === 0) {
-          elementProps.ref = _this5.firstElement;
+          elementProps.innerRef = _this5.firstElement;
         }
 
         return cloneElement(el, elementProps);

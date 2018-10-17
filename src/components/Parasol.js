@@ -188,7 +188,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
           if (this.firstElement && this.firstElement.current && typeof this.firstElement.current.focus === 'function') {
             this.firstElement.current.focus();
           }
-          
+
           return { animating: false, animationDirection: null, page: page };
         });
       }
@@ -372,7 +372,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
                 };
 
                 if (viewPosition === 0) {
-                  elementProps.ref = this.firstElement;
+                  elementProps.innerRef = this.firstElement;
                 }
 
                 return React.cloneElement(el, elementProps);
