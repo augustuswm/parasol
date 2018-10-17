@@ -187,9 +187,11 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
         this.setState(() => {
           setTimeout(function () {
             if (this.firstElement && this.firstElement.current && typeof this.firstElement.current.focus === 'function') {
+              console.log(this.firstElement.current);
+              console.log(this.firstElement.current.focus());
               this.firstElement.current.focus();
             }
-          }, 250);
+          }, 1000);
 
           return { animating: false, animationDirection: null, page: page };
         });
