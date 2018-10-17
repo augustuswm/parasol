@@ -252,17 +252,16 @@ function (_React$Component) {
     key: "paginationEndHandler",
     value: function paginationEndHandler(page) {
       return function (event) {
-        var _this4 = this;
-
         // Check to make sure that any bubbling events are ignored
         if (event.target === event.currentTarget) {
           this.setState(function () {
-            console.log(_this4.firstElement, _this4.firstElement.current);
-
-            if (_this4.firstElement && _this4.firstElement.current && typeof _this4.firstElement.current.focus === 'function') {
-              _this4.firstElement.current.focus();
-            }
-
+            setTimeout(function () {
+              if (this.firstElement && this.firstElement.current && typeof this.firstElement.current.focus === 'function') {
+                console.log(this.firstElement.current);
+                console.log(this.firstElement.current.focus());
+                this.firstElement.current.focus();
+              }
+            }, 1000);
             return {
               animating: false,
               animationDirection: null,
@@ -332,7 +331,7 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this5 = this;
+      var _this4 = this;
 
       var _this$state2 = this.state,
           animating = _this$state2.animating,
@@ -412,7 +411,7 @@ function (_React$Component) {
         };
 
         if (viewPosition === 0) {
-          elementProps.innerRef = _this5.firstElement;
+          elementProps.innerRef = _this4.firstElement;
         }
 
         return cloneElement(el, elementProps);
