@@ -1,4 +1,4 @@
-import { createElement, cloneElement, Component } from 'react';
+import { createRef, createElement, cloneElement, Component } from 'react';
 import memoize from 'memoize-one';
 
 function _classCallCheck(instance, Constructor) {
@@ -131,6 +131,7 @@ function (_React$Component) {
       pageSize: _this.computePageSize(),
       touchXStart: 0
     };
+    _this.firstElement = createRef();
     _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.moveRight = _this.moveRight.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.pages = memoize(_this.pages);
@@ -251,9 +252,12 @@ function (_React$Component) {
     key: "paginationEndHandler",
     value: function paginationEndHandler(page) {
       return function (event) {
+        var _this4 = this;
+
         // Check to make sure that any bubbling events are ignored
         if (event.target === event.currentTarget) {
           this.setState(function () {
+            _this4.firstElement && _this4.firstElement.current && _this4.firstElement.current.focus();
             return {
               animating: false,
               animationDirection: null,
@@ -323,6 +327,8 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
+      var _this5 = this;
+
       var _this$state2 = this.state,
           animating = _this$state2.animating,
           animationDirection = _this$state2.animationDirection,
@@ -392,13 +398,19 @@ function (_React$Component) {
         }
 
         var baseKey = typeof el.key === 'string' ? el.key : '';
-        return cloneElement(el, {
+        var elementProps = {
           key: "".concat(baseKey, "-").concat(i),
           animating: animating,
           position: i,
           viewPosition: viewPosition,
           pageSize: pageSize
-        });
+        };
+
+        if (viewPosition === 0) {
+          elementProps.ref = _this5.firstElement;
+        }
+
+        return cloneElement(el, elementProps);
       }))), createElement("button", {
         className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
         onClick: nextHandler,

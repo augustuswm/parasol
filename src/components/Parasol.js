@@ -54,6 +54,8 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
       touchXStart: 0
     };
 
+    this.firstElement = React.createRef();
+
     this.moveLeft = this.moveLeft.bind(this);
     this.moveRight = this.moveRight.bind(this);
     this.pages = memoize(this.pages);
@@ -183,6 +185,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
       // Check to make sure that any bubbling events are ignored
       if (event.target === event.currentTarget) {
         this.setState(() => {
+          this.firstElement && this.firstElement.current && this.firstElement.current.focus();
           return { animating: false, animationDirection: null, page: page };
         });
       }
@@ -356,13 +359,20 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
                 }
 
                 let baseKey = typeof el.key === 'string' ? el.key : '';
-                return React.cloneElement(el, {
+
+                let elementProps = {
                   key: `${baseKey}-${i}`,
                   animating: animating,
                   position: i,
                   viewPosition: viewPosition,
                   pageSize: pageSize
-                });
+                };
+
+                if (viewPosition === 0) {
+                  elementProps.ref = this.firstElement;
+                }
+
+                return React.cloneElement(el, elementProps);
               })
             }
           </div>
