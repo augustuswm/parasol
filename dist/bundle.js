@@ -407,7 +407,8 @@ function (_React$Component) {
           animating: animating,
           position: i,
           viewPosition: viewPosition,
-          pageSize: pageSize
+          pageSize: pageSize,
+          page: page
         };
 
         if (viewPosition === 0) {
