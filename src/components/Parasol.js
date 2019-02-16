@@ -74,8 +74,10 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     // Once mounted, bind the window resize handler
     window.addEventListener('resize', this.resizeHandler);
 
-    // Bind a handler to prevent screen shaking on mac
-    document && document.body && document.body.addEventListener('wheel', Parasol.shakeHandler);
+    // Bind a handler to prevent screen shaking on mac. Chrome will start making
+    // wheel event handlers passive by default. This defeats the purpose of trying
+    // to prevent shaking from a horizontal trackpad swipe.
+    document && document.body && document.body.addEventListener('wheel', Parasol.shakeHandler, { passive: false });
 
     // Run the resize handler a single time on mount
     this.resizeHandler();
@@ -87,7 +89,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     window.removeEventListener('resize', this.resizeHandler);
 
     // Unbind the screen shake handler
-    document && document.body && document.body.removeEventListener('wheel', Parasol.shakeHandler);
+    document && document.body && document.body.removeEventListener('wheel', Parasol.shakeHandler, { passive: false });
   }
 
   splitBreakpoints: Array<Breakpoint> => Dimensions;

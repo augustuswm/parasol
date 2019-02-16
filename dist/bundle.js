@@ -222,9 +222,13 @@ function (_React$Component) {
     value: function componentDidMount() {
       // !
       // Once mounted, bind the window resize handler
-      window.addEventListener('resize', this.resizeHandler); // Bind a handler to prevent screen shaking on mac
+      window.addEventListener('resize', this.resizeHandler); // Bind a handler to prevent screen shaking on mac. Chrome will start making
+      // wheel event handlers passive by default. This defeats the purpose of trying
+      // to prevent shaking from a horizontal trackpad swipe.
 
-      document && document.body && document.body.addEventListener('wheel', Parasol.shakeHandler); // Run the resize handler a single time on mount
+      document && document.body && document.body.addEventListener('wheel', Parasol.shakeHandler, {
+        passive: false
+      }); // Run the resize handler a single time on mount
 
       this.resizeHandler();
     }
@@ -235,7 +239,9 @@ function (_React$Component) {
       // On unmount, unbind the window resize handler
       window.removeEventListener('resize', this.resizeHandler); // Unbind the screen shake handler
 
-      document && document.body && document.body.removeEventListener('wheel', Parasol.shakeHandler);
+      document && document.body && document.body.removeEventListener('wheel', Parasol.shakeHandler, {
+        passive: false
+      });
     }
   }, {
     key: "splitBreakpoints",
