@@ -1,3 +1,5 @@
 import { Parasol } from "./components/Parasol";
+import { Parasol2 } from "./components/Parasol.hooks";
 
-export default Parasol;
+export { Parasol2 }
+export default Parasol

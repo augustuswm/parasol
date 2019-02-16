@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import memoize from 'memoize-one';
-let debounce = require('lodash.debounce');
+let debounce = fn => fn;
 
 import { gcd, noop } from "../helpers";
 import './parasol.css';
@@ -30,7 +30,8 @@ type ParasolProps = {|
   previousLabel?: String,
   prevTabIndex?: number,
   nextLabel?: String,
-  nextTabIndex?: number
+  nextTabIndex?: number,
+  itemTabIndex?: number
 |};
 
 type ParasolState = {|
@@ -68,7 +69,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
 
   resizeHandler: () => void;
 
-  componentDidMount() {
+  componentDidMount() { // !
 
     // Once mounted, bind the window resize handler
     window.addEventListener('resize', this.resizeHandler);
@@ -80,7 +81,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     this.resizeHandler();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount() { // !
 
     // On unmount, unbind the window resize handler
     window.removeEventListener('resize', this.resizeHandler);
@@ -90,7 +91,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
   }
 
   splitBreakpoints: Array<Breakpoint> => Dimensions;
-  splitBreakpoints(breakpoints: Array<Breakpoint>): Dimensions {
+  splitBreakpoints(breakpoints: Array<Breakpoint>): Dimensions { // !
     let base = { widths: [], sizes: [] };
 
     return breakpoints.reduce(function(dimensions: Dimensions, breakpoint: Breakpoint) {
@@ -100,17 +101,17 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     }, base);
   }
 
-  static shakeHandler(event: WheelEvent) {
+  static shakeHandler(event: WheelEvent) { // !
     Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.preventDefault();
   }
 
   pages: (number, number) => number;
-  pages(elementsCount: number, pageSize: number): number {
+  pages(elementsCount: number, pageSize: number): number { // !
     return elementsCount / gcd(pageSize, elementsCount);
   }
 
   moveLeft: () => void;
-  moveLeft() {
+  moveLeft() { // !
     this.setState(() => {
       if (this.props.onScroll && typeof this.props.onScroll === 'function') {
         this.props.onScroll();
@@ -124,7 +125,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
   }
 
   moveRight: () => void;
-  moveRight() {
+  moveRight() { // !
     this.setState(() => {
       if (this.props.onScroll && typeof this.props.onScroll === 'function') {
         this.props.onScroll();
@@ -138,12 +139,12 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
   }
 
   wheelHandler: WheelEvent => void;
-  wheelHandler(event: WheelEvent): void {
+  wheelHandler(event: WheelEvent): void { // !
     event.deltaX < -this.props.sensitivity && this.moveLeft() ||
     event.deltaX > this.props.sensitivity && this.moveRight();
   }
 
-  computePageSize() {
+  computePageSize() { // !
 
     // Make sure the document is available
     if (document.documentElement) {
@@ -164,7 +165,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
     return 0;
   }
 
-  pageSizeHandler() {
+  pageSizeHandler() { // !
 
     let newPageSize = this.computePageSize();
 
@@ -179,7 +180,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
   }
 
   paginationEndHandler: number => (SyntheticTransitionEvent<*> => void);
-  paginationEndHandler(page: number): SyntheticTransitionEvent<*> => void {
+  paginationEndHandler(page: number): SyntheticTransitionEvent<*> => void { // !
     return function(event: SyntheticTransitionEvent<*>) {
 
       // Check to make sure that any bubbling events are ignored
@@ -371,12 +372,20 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
                   position: i,
                   viewPosition: viewPosition,
                   pageSize: pageSize,
-                  page: page
+                  page: page,
+                  // DEPRECATED
+                  innerRef: viewPosition === 0 ? this.firstElement : undefined,
+                  getRefProp: _ => {
+                    return {
+                      ref: viewPosition === 0 ? this.firstElement : null
+                    };
+                  },
+                  getTabIndex: _ => {
+                    return {
+                      tabIndex: viewPosition !== null ? this.props.itemTabIndex: -1
+                    };
+                  }
                 };
-
-                if (viewPosition === 0) {
-                  elementProps.innerRef = this.firstElement;
-                }
 
                 return React.cloneElement(el, elementProps);
               })
