@@ -1,4 +1,4 @@
-import { createRef, createElement, cloneElement, Component, useRef, useReducer, useCallback, useEffect, useMemo } from 'react';
+import { createRef, createElement, cloneElement, Component, useEffect, useRef, useReducer, useCallback, useMemo, Fragment } from 'react';
 import memoize from 'memoize-one';
 
 function _classCallCheck(instance, Constructor) {
@@ -573,9 +573,31 @@ Parasol.defaultProps = {
   onScroll: noop
 };
 
-var shakeHandler = function shakeHandler(event) {
-  Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.preventDefault();
-};
+function useShakeDisable() {
+  function shakeHandler(event) {
+    Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.preventDefault();
+  }
+
+  useEffect(function (_) {
+    var canBind = typeof document !== 'undefined' && document.body && typeof document.body.addEventListener === 'function'; // Bind a handler to prevent screen shaking on mac. Chrome will start making
+    // wheel event handlers passive by default. This defeats the purpose of trying
+    // to prevent shaking from a horizontal trackpad swipe.
+
+    if (canBind) {
+      var body = document.body;
+      body.addEventListener('wheel', shakeHandler, {
+        passive: false
+      });
+      return function (_) {
+        body.removeEventListener('wheel', shakeHandler, {
+          passive: false
+        });
+      };
+    }
+  }, []);
+} // Splits apart a (width, page size) array in to two arrays, widths and sizes,
+// containing the individual values respectively.
+
 
 var splitBreakpoints = memoize(function (breakpoints) {
   var base = {
@@ -589,37 +611,65 @@ var splitBreakpoints = memoize(function (breakpoints) {
   }, base);
 });
 
-var computePageSize = function computePageSize(breakpoints) {
+function computeName(breakpoints) {
+  return 'p-' + breakpoints.map(function (breakpoint) {
+    return breakpoint.join('');
+  }).join('');
+}
+
+function computePageSizeCSS(breakpoints) {
+  var name = computeName(breakpoints);
+  return breakpoints.map(function (breakpoint) {
+    return "\n      @media(min-width: ".concat(breakpoint[0], "px) {\n        .").concat(name, " .parasol-container > * {\n          width: ").concat(100 / breakpoint[1], "%;\n          display: inline-block;\n        }\n      }\n    ");
+  }).reverse().join('\n');
+} // Given an array of breakpoints, selects the appropriate breakpoint for the
+// current screen size. If the screen happens to not be available, the first
+// option is selected.
+
+
+function computePageSize(breakpoints) {
   // Make sure the document is available
-  if (document && document.documentElement) {
+  if (typeof document !== 'undefined' && document.documentElement) {
     // Get the window width
     var width = document.documentElement.clientWidth; // Split breakpoints into their individual parts
 
-    var dims = splitBreakpoints(breakpoints); // Determine the possible window sizes
+    var _dims = splitBreakpoints(breakpoints); // Determine the possible window sizes
 
-    var sKeys = dims.widths.filter(function (w) {
+
+    var sKeys = _dims.widths.filter(function (w) {
       return width > w;
     }); // Select the largest and get the associated page size
 
-    return dims.sizes[dims.widths.length - sKeys.length];
-  }
 
-  return 0;
-};
+    return _dims.sizes[_dims.widths.length - sKeys.length];
+  } // If the document is not available, then default to the largest page size
 
-var pages = function pages(elementsCount, pageSize) {
+
+  return dims.sizes.reduce(function (size, breakpoint) {
+    return breakpoint[1] > size ? breakpoint[1] : size;
+  }, 0);
+} // Given a number of elements and a desired number of elements per page,
+// computes how many elements should be on each page
+
+
+function pages(elementsCount, pageSize) {
   return elementsCount / gcd(pageSize, elementsCount);
-};
+} // Takes a raw list of elements (ie. the child nodes of Parasol), a number of
+// elements to display per page, and the page to display. A new list of elements
+// is then computed such that the appropriate elements are shown, and enough
+// elements are attached before and after the visible page so that there are
+// enough elements to cover changing pages
 
-var computeElementList = function computeElementList(elements, page, pageSize) {
-  // Determine the start location of the focus
+
+function computeElementList(elements, page, pageSize) {
+  // Determine the start location of the focus (in-view elements)
   var focusStart = (page - 1) * pageSize % elements.length;
-  var focusEnd = focusStart + pageSize; // Compute the area of the clips that will be visible on the current page
+  var focusEnd = focusStart + pageSize; // Compute the area of the elements that will be visible on the current page
 
-  var focus = elements.slice(focusStart, focusStart + pageSize); // For clip lengths that do not align with the pages size, additional
-  // clips may be needed to pad out the focus area
+  var focus = elements.slice(focusStart, focusStart + pageSize); // For element lengths that do not align with the pages size, additional
+  // elements may be needed to pad out the focus area
 
-  var focusPadding = Math.max(0, pageSize - focus.length); // If the focus needs to be extended, add additional clips
+  var focusPadding = Math.max(0, pageSize - focus.length); // If the focus needs to be extended, add additional elements
 
   if (focusPadding > 0) {
     focus = focus.concat(elements.slice(0, focusPadding)); // If the focus area wrapped, then adjust the ending point
@@ -635,15 +685,15 @@ var computeElementList = function computeElementList(elements, page, pageSize) {
   } // Compute the list that precedes the focus
 
 
-  var head = elements.slice(Math.max(0, focusStart - pageSize), focusStart); // If the head is too short, add clips from the end of the list
+  var head = elements.slice(Math.max(0, focusStart - pageSize), focusStart); // If the head is too short, add elements from the end of the list
 
   if (head.length < pageSize) {
     head = elements.slice(-1 * (pageSize - head.length)).concat(head);
-  } // Finally combine the lists to create the displayable clip list
+  } // Finally combine the lists to create the displayable element list
 
 
   return head.concat(focus).concat(tail);
-};
+}
 
 var Parasol2 = function Parasol2(_ref) {
   var _ref$breakpoints = _ref.breakpoints,
@@ -669,6 +719,7 @@ var Parasol2 = function Parasol2(_ref) {
       nextTabIndex = _ref$nextTabIndex === void 0 ? 0 : _ref$nextTabIndex,
       _ref$itemTabIndex = _ref.itemTabIndex,
       itemTabIndex = _ref$itemTabIndex === void 0 ? 0 : _ref$itemTabIndex;
+  useShakeDisable();
   var firstElement = useRef(null);
 
   var _useReducer = useReducer(function (state, newState) {
@@ -693,27 +744,29 @@ var Parasol2 = function Parasol2(_ref) {
       touchXStart = state.touchXStart;
   var pageCount = pages(children.length, pageSize);
   var hasOverflow = children.length > pageSize;
-  var pageSizeHandler = useCallback(function (_) {
-    var newPageSize = computePageSize(breakpoints); // If the new page size is different than the existing size then update
-
-    if (pageSize !== newPageSize) {
-      setState({
-        pageSize: newPageSize
-      });
-    }
-  }, [pageSize, breakpoints]);
   useEffect(function (_) {
-    // Once mounted, bind the window resize handler
-    window && window.addEventListener('resize', pageSizeHandler); // Bind a handler to prevent screen shaking on mac
+    console.log('page size effect');
 
-    document && document.body && document.body.addEventListener('wheel', shakeHandler); // Run the resize handler a single time on mount
+    function pageSizeHandler() {
+      var newPageSize = computePageSize(breakpoints); // If the new page size is different than the existing size then update
+
+      if (pageSize !== newPageSize) {
+        console.log('Old page size', pageSize);
+        console.log('New page size', newPageSize);
+        setState({
+          pageSize: newPageSize
+        });
+      }
+    } // Once mounted, bind the window resize handler
+
+
+    typeof window !== 'undefined' && typeof window.addEventListener === 'function' && window.addEventListener('resize', pageSizeHandler); // Run the resize handler a single time on mount
 
     pageSizeHandler();
     return function (_) {
-      window && window.removeEventListener('resize', pageSizeHandler);
-      document && document.body && document.body.removeEventListener('wheel', shakeHandler);
+      typeof window !== 'undefined' && typeof window.removeEventListener === 'function' && window.removeEventListener('resize', pageSizeHandler);
     };
-  }, []);
+  }, [pageSize, breakpoints]);
   useEffect(function (_) {
     if (animationComplete && firstElement && firstElement.current && typeof firstElement.current.focus === 'function') {
       firstElement.current.focus();
@@ -785,12 +838,18 @@ var Parasol2 = function Parasol2(_ref) {
       }
     }
   }, [animating, hasOverflow, touchXStart, sensitivity]);
+  var name = useMemo(function (_) {
+    return computeName(breakpoints);
+  }, [breakpoints]);
+  var containerCSS = useMemo(function (_) {
+    return computePageSizeCSS(breakpoints);
+  }, [breakpoints]);
   var containerClass = useMemo(function (_) {
     var animating = state.animating,
         animationDirection = state.animationDirection,
         pageSize = state.pageSize;
     var hasOverflow = children.length > pageSize;
-    var containerClass = "parasol-container page-size-".concat(pageSize);
+    var containerClass = "parasol-container";
 
     if (hasOverflow) {
       containerClass += ' overflow';
@@ -834,8 +893,8 @@ var Parasol2 = function Parasol2(_ref) {
       return paginationEndHandler(newPage)(e);
     }
   }, [animating, animationDirection, pageCount]);
-  return createElement("div", {
-    className: "parasol parasol-carousel",
+  return createElement(Fragment, null, createElement("style", null, containerCSS), createElement("div", {
+    className: "parasol parasol-carousel ".concat(name),
     onMouseEnter: onMouseEnter,
     onMouseLeave: onMouseLeave,
     onMouseMove: onMouseMove,
@@ -890,7 +949,7 @@ var Parasol2 = function Parasol2(_ref) {
     onClick: nextHandler,
     tabIndex: nextTabIndex,
     "aria-label": nextLabel
-  }));
+  })));
 };
 
 export default Parasol;

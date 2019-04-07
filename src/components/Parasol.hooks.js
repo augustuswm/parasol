@@ -1,14 +1,33 @@
 // @flow
+
 import * as React from 'react';
 import { useReducer, useEffect, useRef, useMemo, useCallback } from 'react';
 import memoize from 'memoize-one';
 import { gcd, noop } from "../helpers";
 import type { Breakpoint, Dimensions, ParasolProps, ParasolState } from "../types";
 
-// Suppresses left/right shaking of the browser when swiping on a row. This is
-// to make it feel like only the row is responding to swipe inputs.
-function shakeHandler(event: WheelEvent) {
-  Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.preventDefault();
+function useShakeDisable() {
+  function shakeHandler(event: WheelEvent) {
+    Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.preventDefault();
+  }
+
+  useEffect(_ => {
+    let canBind = typeof document !== 'undefined' &&
+      document.body &&
+      typeof document.body.addEventListener === 'function';
+
+    // Bind a handler to prevent screen shaking on mac. Chrome will start making
+    // wheel event handlers passive by default. This defeats the purpose of trying
+    // to prevent shaking from a horizontal trackpad swipe.
+    if (canBind) {
+      let body = document.body;
+      body.addEventListener('wheel', shakeHandler, { passive: false });
+
+      return _ => {
+        body.removeEventListener('wheel', shakeHandler, { passive: false });
+      }
+    }
+  }, []);
 }
 
 // Splits apart a (width, page size) array in to two arrays, widths and sizes,
@@ -23,13 +42,34 @@ const splitBreakpoints = memoize((breakpoints: Array<Breakpoint>): Dimensions =>
   }, base);
 });
 
+function computeName(breakpoints: Array<Breakpoint>): string {
+  return 'p-' + breakpoints.map((breakpoint: Breakpoint): string => {
+    return breakpoint.join('');
+  }).join('');
+}
+
+function computePageSizeCSS(breakpoints: Array<Breakpoint>): string {
+  let name = computeName(breakpoints);
+
+  return breakpoints.map((breakpoint: Breakpoint): string => {
+    return `
+      @media(min-width: ${breakpoint[0]}px) {
+        .${name} .parasol-container > * {
+          width: ${100 / breakpoint[1]}%;
+          display: inline-block;
+        }
+      }
+    `;
+  }).reverse().join('\n');
+}
+
 // Given an array of breakpoints, selects the appropriate breakpoint for the
 // current screen size. If the screen happens to not be available, the first
 // option is selected.
 function computePageSize(breakpoints: Array<Breakpoint>): number {
 
   // Make sure the document is available
-  if (document && document.documentElement) {
+  if (typeof document !== 'undefined' && document.documentElement) {
 
     // Get the window width
     let width = document.documentElement.clientWidth;
@@ -44,7 +84,10 @@ function computePageSize(breakpoints: Array<Breakpoint>): number {
     return dims.sizes[dims.widths.length - sKeys.length];
   }
 
-  return 0;
+  // If the document is not available, then default to the largest page size
+  return dims.sizes.reduce(function(size: number, breakpoint: Breakpoint) {
+    return breakpoint[1] > size ? breakpoint[1] : size;
+  }, 0);
 }
 
 // Given a number of elements and a desired number of elements per page,
@@ -116,6 +159,8 @@ const Parasol2 = function Parasol2({
   nextTabIndex = 0,
   itemTabIndex = 0
 }: ParasolProps) {
+  useShakeDisable();
+
   const firstElement = useRef(null);
   const [state, setState]: [ParasolState, Function] = useReducer(
     (state, newState) => ({...state, ...newState}),
@@ -133,34 +178,33 @@ const Parasol2 = function Parasol2({
   let pageCount: number = pages(children.length, pageSize);
   let hasOverflow: bool = children.length > pageSize;
 
-  const pageSizeHandler: (void => void) = useCallback(
-    _ => {
+  useEffect(_ => {
+    console.log('page size effect');
+    function pageSizeHandler(): void {
       let newPageSize = computePageSize(breakpoints);
 
       // If the new page size is different than the existing size then update
       if (pageSize !== newPageSize) {
+        console.log('Old page size', pageSize);
+        console.log('New page size', newPageSize);
         setState({ pageSize: newPageSize });
       }
-    },
-    [pageSize, breakpoints]
-  );
-
-  useEffect(_ => {
+    }
 
     // Once mounted, bind the window resize handler
-    window && window.addEventListener('resize', pageSizeHandler);
-
-    // Bind a handler to prevent screen shaking on mac
-    document && document.body && document.body.addEventListener('wheel', shakeHandler);
+    typeof window !== 'undefined' &&
+    typeof window.addEventListener === 'function' &&
+    window.addEventListener('resize', pageSizeHandler);
 
     // Run the resize handler a single time on mount
     pageSizeHandler();
 
     return _ => {
-      window && window.removeEventListener('resize', pageSizeHandler);
-      document && document.body && document.body.removeEventListener('wheel', shakeHandler);
+      typeof window !== 'undefined' &&
+      typeof window.removeEventListener === 'function' &&
+      window.removeEventListener('resize', pageSizeHandler);
     }
-  }, []);
+  }, [pageSize, breakpoints]);
 
   useEffect(_ => {
     if (animationComplete && firstElement && firstElement.current && typeof firstElement.current.focus === 'function') {
@@ -245,12 +289,26 @@ const Parasol2 = function Parasol2({
     [animating, hasOverflow, touchXStart, sensitivity]
   );
 
+  let name: string = useMemo(
+    _ => {
+       return computeName(breakpoints);
+    },
+    [breakpoints]
+  )
+
+  let containerCSS: string = useMemo(
+    _ => {
+      return computePageSizeCSS(breakpoints);
+    },
+    [breakpoints]
+  );
+
   let containerClass: string = useMemo(
     _ => {
       let { animating, animationDirection, pageSize } = state;
       let hasOverflow = children.length > pageSize;
 
-      let containerClass = `parasol-container page-size-${pageSize}`;
+      let containerClass = `parasol-container`;
 
       if (hasOverflow) {
         containerClass += ' overflow';
@@ -309,70 +367,75 @@ const Parasol2 = function Parasol2({
     [animating, animationDirection, pageCount]
   );
 
-  return <div
-    className={`parasol parasol-carousel`}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-    onMouseMove={onMouseMove}
-    onMouseOut={onMouseOut}
-    onMouseOver={onMouseOver}
-  >
-    <button
-      className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`}
-      onClick={prevHandler}
-      tabIndex={prevTabIndex}
-      aria-label={previousLabel} />
-    <div className="parasol-window">
-      <div
-        className={containerClass}
-        onTouchStart={touchStartHandler}
-        onTouchMove={touchMoveHandler}
-        onWheel={wheelHandler}
-        onTransitionEnd={containerHandler}>
-        {
-          elements.map((el, i) => {
-            let viewPosition;
+  return <React.Fragment>
+    <style>
+      {containerCSS}
+    </style>
+    <div
+      className={`parasol parasol-carousel ${name}`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onMouseMove={onMouseMove}
+      onMouseOut={onMouseOut}
+      onMouseOver={onMouseOver}
+    >
+      <button
+        className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`}
+        onClick={prevHandler}
+        tabIndex={prevTabIndex}
+        aria-label={previousLabel} />
+      <div className="parasol-window">
+        <div
+          className={containerClass}
+          onTouchStart={touchStartHandler}
+          onTouchMove={touchMoveHandler}
+          onWheel={wheelHandler}
+          onTransitionEnd={containerHandler}>
+          {
+            elements.map((el, i) => {
+              let viewPosition;
 
-            if (hasOverflow) {
-              viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
-            } else {
-              viewPosition = i;
-            }
-
-            let baseKey = typeof el.key === 'string' ? el.key : '';
-
-            let elementProps = {
-              key: `${baseKey}-${i}`,
-              animating: animating,
-              position: i,
-              viewPosition: viewPosition,
-              pageSize: pageSize,
-              page: page,
-              // DEPRECATED
-              innerRef: viewPosition === 0 ? firstElement : undefined,
-              getRefProp: _ => {
-                return {
-                  ref: viewPosition === 0 ? firstElement : null
-                };
-              },
-              getTabIndex: _ => {
-                return {
-                  tabIndex: viewPosition !== null ? itemTabIndex: -1
-                };
+              if (hasOverflow) {
+                viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
+              } else {
+                viewPosition = i;
               }
-            };
 
-            return React.cloneElement(el, elementProps);
-          })
-        }
+              let baseKey = typeof el.key === 'string' ? el.key : '';
+
+              let elementProps = {
+                key: `${baseKey}-${i}`,
+                animating: animating,
+                position: i,
+                viewPosition: viewPosition,
+                pageSize: pageSize,
+                page: page,
+                // DEPRECATED
+                innerRef: viewPosition === 0 ? firstElement : undefined,
+                getRefProp: _ => {
+                  return {
+                    ref: viewPosition === 0 ? firstElement : null
+                  };
+                },
+                getTabIndex: _ => {
+                  return {
+                    tabIndex: viewPosition !== null ? itemTabIndex: -1
+                  };
+                }
+              };
+
+              return React.cloneElement(el, elementProps);
+            })
+          }
+        </div>
       </div>
+      <button
+        className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`}
+        onClick={nextHandler}
+        tabIndex={nextTabIndex}
+        aria-label={nextLabel} />
     </div>
-    <button
-      className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`}
-      onClick={nextHandler}
-      tabIndex={nextTabIndex}
-      aria-label={nextLabel} />
-  </div>;
+  </React.Fragment>;
 };
 
 export { Parasol2 }
