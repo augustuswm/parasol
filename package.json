@@ -2,7 +2,8 @@
   "name": "react-parasol",
   "version": "0.0.8",
   "description": "A carousel for React",
-  "main": "dist/bundle.js",
+  "main": "dist/bundle.umd.js",
+  "module": "dist/bundle.esm.js",
   "scripts": {
     "build": "./node_modules/rollup/bin/rollup -c",
     "test": "NODE_ENV=test jest"
