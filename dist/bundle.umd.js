@@ -633,20 +633,18 @@
 
 
   function computePageSize(breakpoints) {
-    // Make sure the document is available
+    // Split breakpoints into their individual parts
+    var dims = splitBreakpoints(breakpoints); // Make sure the document is available
+
     if (typeof document !== 'undefined' && document.documentElement) {
       // Get the window width
-      var width = document.documentElement.clientWidth; // Split breakpoints into their individual parts
+      var width = document.documentElement.clientWidth; // Determine the possible window sizes
 
-      var _dims = splitBreakpoints(breakpoints); // Determine the possible window sizes
-
-
-      var sKeys = _dims.widths.filter(function (w) {
+      var sKeys = dims.widths.filter(function (w) {
         return width > w;
       }); // Select the largest and get the associated page size
 
-
-      return _dims.sizes[_dims.widths.length - sKeys.length];
+      return dims.sizes[dims.widths.length - sKeys.length];
     } // If the document is not available, then default to the largest page size
 
 

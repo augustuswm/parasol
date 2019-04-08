@@ -68,14 +68,14 @@ function computePageSizeCSS(breakpoints: Array<Breakpoint>): string {
 // option is selected.
 function computePageSize(breakpoints: Array<Breakpoint>): number {
 
+  // Split breakpoints into their individual parts
+  let dims = splitBreakpoints(breakpoints);
+
   // Make sure the document is available
   if (typeof document !== 'undefined' && document.documentElement) {
 
     // Get the window width
     let width = document.documentElement.clientWidth;
-
-    // Split breakpoints into their individual parts
-    let dims = splitBreakpoints(breakpoints);
 
     // Determine the possible window sizes
     let sKeys = dims.widths.filter(w => width > w);
