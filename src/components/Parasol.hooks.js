@@ -68,11 +68,11 @@ function computePageSizeCSS(breakpoints: Array<Breakpoint>): string {
 // option is selected.
 function computePageSize(breakpoints: Array<Breakpoint>): number {
 
-  // Split breakpoints into their individual parts
-  let dims = splitBreakpoints(breakpoints);
-
   // Make sure the document is available
   if (typeof document !== 'undefined' && document.documentElement) {
+
+    // Split breakpoints into their individual parts
+    let dims = splitBreakpoints(breakpoints);
 
     // Get the window width
     let width = document.documentElement.clientWidth;
@@ -85,7 +85,7 @@ function computePageSize(breakpoints: Array<Breakpoint>): number {
   }
 
   // If the document is not available, then default to the largest page size
-  return dims.sizes.reduce(function(size: number, breakpoint: Breakpoint) {
+  return breakpoints.reduce(function(size: number, breakpoint: Breakpoint) {
     return breakpoint[1] > size ? breakpoint[1] : size;
   }, 0);
 }

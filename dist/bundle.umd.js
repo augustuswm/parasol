@@ -633,11 +633,11 @@
 
 
   function computePageSize(breakpoints) {
-    // Split breakpoints into their individual parts
-    var dims = splitBreakpoints(breakpoints); // Make sure the document is available
-
+    // Make sure the document is available
     if (typeof document !== 'undefined' && document.documentElement) {
-      // Get the window width
+      // Split breakpoints into their individual parts
+      var dims = splitBreakpoints(breakpoints); // Get the window width
+
       var width = document.documentElement.clientWidth; // Determine the possible window sizes
 
       var sKeys = dims.widths.filter(function (w) {
@@ -648,7 +648,7 @@
     } // If the document is not available, then default to the largest page size
 
 
-    return dims.sizes.reduce(function (size, breakpoint) {
+    return breakpoints.reduce(function (size, breakpoint) {
       return breakpoint[1] > size ? breakpoint[1] : size;
     }, 0);
   } // Given a number of elements and a desired number of elements per page,
