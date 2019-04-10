@@ -896,7 +896,11 @@
         return paginationEndHandler(newPage)(e);
       }
     }, [animating, animationDirection, pageCount]);
-    return React.createElement(React.Fragment, null, React.createElement("style", null, containerCSS), React.createElement("div", {
+    return React.createElement(React.Fragment, null, React.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: containerCSS
+      }
+    }), React.createElement("div", {
       className: "parasol parasol-carousel ".concat(name),
       onMouseEnter: onMouseEnter,
       onMouseLeave: onMouseLeave,

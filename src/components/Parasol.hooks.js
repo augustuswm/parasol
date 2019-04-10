@@ -368,9 +368,7 @@ const Parasol2 = function Parasol2({
   );
 
   return <React.Fragment>
-    <style>
-      {containerCSS}
-    </style>
+    <style dangerouslySetInnerHTML={{__html: containerCSS}} />
     <div
       className={`parasol parasol-carousel ${name}`}
       onMouseEnter={onMouseEnter}

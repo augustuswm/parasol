@@ -891,7 +891,11 @@ var Parasol2 = function Parasol2(_ref) {
       return paginationEndHandler(newPage)(e);
     }
   }, [animating, animationDirection, pageCount]);
-  return createElement(Fragment, null, createElement("style", null, containerCSS), createElement("div", {
+  return createElement(Fragment, null, createElement("style", {
+    dangerouslySetInnerHTML: {
+      __html: containerCSS
+    }
+  }), createElement("div", {
     className: "parasol parasol-carousel ".concat(name),
     onMouseEnter: onMouseEnter,
     onMouseLeave: onMouseLeave,
