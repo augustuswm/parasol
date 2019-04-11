@@ -50,7 +50,7 @@ function CoreStyles() {
     }
 
     .parasol-carousel .parasol-container.overflow {
-     transform: translate3d(-100%, 0, 0);
+     transform: translate(-100%, 0);
     }
 
     .parasol-carousel .parasol-container.animating {
@@ -58,11 +58,11 @@ function CoreStyles() {
     }
 
     .parasol-carousel .parasol-container.animating-left {
-     transform: translate3d(0, 0, 0);
+     transform: translate(0, 0);
     }
 
     .parasol-carousel .parasol-container.animating-right {
-     transform: translate3d(-200%, 0, 0);
+     transform: translate(-200%, 0);
     }
   `;
   
