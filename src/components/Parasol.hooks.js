@@ -1,9 +1,10 @@
 // @flow
 
-import * as React from 'react';
-import { useReducer, useEffect, useRef, useMemo, useCallback } from 'react';
-import memoize from 'memoize-one';
+import * as React from "react";
+import { useReducer, useEffect, useRef, useMemo, useCallback } from "react";
+import memoize from "memoize-one";
 import { gcd, noop } from "../helpers";
+import CoreStyles from "./styles";
 import type { Breakpoint, Dimensions, ParasolProps, ParasolState } from "../types";
 
 function useShakeDisable() {
@@ -368,6 +369,7 @@ const Parasol2 = function Parasol2({
   );
 
   return <React.Fragment>
+    <CoreStyles />
     <style dangerouslySetInnerHTML={{__html: containerCSS}} />
     <div
       className={`parasol parasol-carousel ${name}`}
