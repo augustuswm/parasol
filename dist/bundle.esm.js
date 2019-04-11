@@ -856,10 +856,6 @@ var Parasol2 = function Parasol2(_ref) {
     return computePageSizeCSS(breakpoints);
   }, [breakpoints]);
   var containerClass = useMemo(function (_) {
-    var animating = state.animating,
-        animationDirection = state.animationDirection,
-        pageSize = state.pageSize;
-    var hasOverflow = children.length > pageSize;
     var containerClass = "parasol-container";
 
     if (hasOverflow) {
@@ -872,7 +868,7 @@ var Parasol2 = function Parasol2(_ref) {
     }
 
     return containerClass;
-  }, [animating, animationDirection, pageSize]);
+  }, [animating, animationDirection, hasOverflow]);
   var prevHandler = useCallback(function (_) {
     return !animating && moveLeft();
   }, [animating]);

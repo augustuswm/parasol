@@ -306,9 +306,6 @@ const Parasol2 = function Parasol2({
 
   let containerClass: string = useMemo(
     _ => {
-      let { animating, animationDirection, pageSize } = state;
-      let hasOverflow = children.length > pageSize;
-
       let containerClass = `parasol-container`;
 
       if (hasOverflow) {
@@ -322,7 +319,7 @@ const Parasol2 = function Parasol2({
 
       return containerClass;
     },
-    [animating, animationDirection, pageSize]
+    [animating, animationDirection, hasOverflow]
   );
 
   let prevHandler = useCallback(

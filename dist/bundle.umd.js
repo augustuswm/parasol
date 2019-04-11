@@ -861,10 +861,6 @@
       return computePageSizeCSS(breakpoints);
     }, [breakpoints]);
     var containerClass = React.useMemo(function (_) {
-      var animating = state.animating,
-          animationDirection = state.animationDirection,
-          pageSize = state.pageSize;
-      var hasOverflow = children.length > pageSize;
       var containerClass = "parasol-container";
 
       if (hasOverflow) {
@@ -877,7 +873,7 @@
       }
 
       return containerClass;
-    }, [animating, animationDirection, pageSize]);
+    }, [animating, animationDirection, hasOverflow]);
     var prevHandler = React.useCallback(function (_) {
       return !animating && moveLeft();
     }, [animating]);
