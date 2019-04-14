@@ -579,18 +579,6 @@
   };
 
   //      
-
-  function CoreStyles() {
-    var styles = "\n    .parasol {\n      position: relative;\n      margin: 0 -6px;\n      touch-action: pan-y;\n    }\n\n    .parasol.parasol-carousel {\n      margin: 0;\n      padding: 0 4%;\n    }\n\n    .parasol-cap {\n      position: absolute;\n      top: 0;\n      right: 0;\n      width: 4%;\n      height: 100%;\n      text-align: center;\n      font-size: 4em;\n      z-index: 2;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n      padding-top: 25px;\n      text-transform: uppercase;\n      cursor: pointer;\n    }\n\n    .parasol-cap-left {\n      left: 0;\n    }\n\n    .parasol-cap-right {\n      right: 0;\n    }\n\n    .parasol-window {\n      overflow-x: visible;\n    }\n\n    .parasol-container {\n      white-space: nowrap;\n    }\n\n    .parasol-carousel .parasol-container.overflow {\n     transform: translate(-100%, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating {\n      transition: transform 1s ease 0s;\n    }\n\n    .parasol-carousel .parasol-container.animating-left {\n     transform: translate(0, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating-right {\n     transform: translate(-200%, 0);\n    }\n  ";
-    return React.createElement("style", {
-      dangerouslySetInnerHTML: {
-        __html: styles
-      }
-    });
-  }
-
-  var CoreStyles$1 = React.memo(CoreStyles);
-
   function useShakeDisable() {
     function shakeHandler(event) {
       Math.abs(event.deltaX) >= Math.abs(event.deltaY) && event.preventDefault();
@@ -613,9 +601,22 @@
         };
       }
     }, []);
-  } // Splits apart a (width, page size) array in to two arrays, widths and sizes,
-  // containing the individual values respectively.
+  }
 
+  //      
+
+  function CoreStyles() {
+    var styles = "\n    .parasol {\n      position: relative;\n      margin: 0 -6px;\n      touch-action: pan-y;\n    }\n\n    .parasol.parasol-carousel {\n      margin: 0;\n      padding: 0 4%;\n    }\n\n    .parasol-cap {\n      position: absolute;\n      top: 0;\n      right: 0;\n      width: 4%;\n      height: 100%;\n      text-align: center;\n      font-size: 4em;\n      z-index: 2;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n      padding-top: 25px;\n      text-transform: uppercase;\n      cursor: pointer;\n    }\n\n    .parasol-cap-left {\n      left: 0;\n    }\n\n    .parasol-cap-right {\n      right: 0;\n    }\n\n    .parasol-window {\n      overflow-x: visible;\n    }\n\n    .parasol-container {\n      white-space: nowrap;\n    }\n\n    .parasol-carousel .parasol-container.overflow {\n     transform: translate(-100%, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating {\n      transition: transform 1s ease 0s;\n    }\n\n    .parasol-carousel .parasol-container.animating-left {\n     transform: translate(0, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating-right {\n     transform: translate(-200%, 0);\n    }\n  ";
+    return React.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: styles
+      }
+    });
+  }
+
+  var CoreStyles$1 = React.memo(CoreStyles);
+
+  // containing the individual values respectively.
 
   var splitBreakpoints = memoize(function (breakpoints) {
     var base = {
