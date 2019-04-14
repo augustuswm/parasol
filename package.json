@@ -1,6 +1,6 @@
 {
   "name": "react-parasol",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A carousel for React",
   "main": "dist/bundle.umd.js",
   "module": "dist/bundle.esm.js",
