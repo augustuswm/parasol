@@ -2,6 +2,8 @@
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -258,9 +260,7 @@
     return fn;
   };
 
-  var Parasol =
-  /*#__PURE__*/
-  function (_React$Component) {
+  var Parasol = /*#__PURE__*/function (_React$Component) {
     _inherits$1(Parasol, _React$Component);
 
     function Parasol(props) {
@@ -276,7 +276,7 @@
         pageSize: _this.computePageSize(),
         touchXStart: 0
       };
-      _this.firstElement = react.createRef();
+      _this.firstElement = /*#__PURE__*/react.createRef();
       _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
       _this.moveRight = _this.moveRight.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
       _this.pages = index(_this.pages);
@@ -533,21 +533,21 @@
           containerHandler = this.paginationEndHandler(newPage);
         }
 
-        return react.createElement("div", {
+        return /*#__PURE__*/react.createElement("div", {
           className: "parasol parasol-carousel",
           onMouseEnter: this.props.onMouseEnter,
           onMouseLeave: this.props.onMouseLeave,
           onMouseMove: this.props.onMouseMove,
           onMouseOut: this.props.onMouseOut,
           onMouseOver: this.props.onMouseOver
-        }, react.createElement("button", {
+        }, /*#__PURE__*/react.createElement("button", {
           className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
           onClick: prevHandler,
           tabIndex: this.props.prevTabIndex || 0,
           "aria-label": this.props.previousLabel || 'Previous Items'
-        }), react.createElement("div", {
+        }), /*#__PURE__*/react.createElement("div", {
           className: "parasol-window"
-        }, react.createElement("div", {
+        }, /*#__PURE__*/react.createElement("div", {
           className: this.containerClass(),
           onTouchStart: touchStartHandler,
           onTouchMove: touchMoveHandler,
@@ -583,8 +583,8 @@
               };
             }
           };
-          return react.cloneElement(el, elementProps);
-        }))), react.createElement("button", {
+          return /*#__PURE__*/react.cloneElement(el, elementProps);
+        }))), /*#__PURE__*/react.createElement("button", {
           className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
           onClick: nextHandler,
           tabIndex: this.props.nextTabIndex || 0,
@@ -965,21 +965,21 @@
         return paginationEndHandler(newPage)(e);
       }
     }, [animating, animationDirection, pageCount]);
-    return react.createElement(react.Fragment, null, react.createElement("style", null, containerCSS), react.createElement("div", {
+    return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement("style", null, containerCSS), /*#__PURE__*/react.createElement("div", {
       className: "parasol parasol-carousel ".concat(name),
       onMouseEnter: onMouseEnter,
       onMouseLeave: onMouseLeave,
       onMouseMove: onMouseMove,
       onMouseOut: onMouseOut,
       onMouseOver: onMouseOver
-    }, react.createElement("button", {
+    }, /*#__PURE__*/react.createElement("button", {
       className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
       onClick: prevHandler,
       tabIndex: prevTabIndex,
       "aria-label": previousLabel
-    }), react.createElement("div", {
+    }), /*#__PURE__*/react.createElement("div", {
       className: "parasol-window"
-    }, react.createElement("div", {
+    }, /*#__PURE__*/react.createElement("div", {
       className: containerClass,
       onTouchStart: touchStartHandler,
       onTouchMove: touchMoveHandler,
@@ -1015,8 +1015,8 @@
           };
         }
       };
-      return react.cloneElement(el, elementProps);
-    }))), react.createElement("button", {
+      return /*#__PURE__*/react.cloneElement(el, elementProps);
+    }))), /*#__PURE__*/react.createElement("button", {
       className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
       onClick: nextHandler,
       tabIndex: nextTabIndex,
@@ -1028,31 +1028,31 @@
     var getRefProp = _ref.getRefProp,
         getTabIndex = _ref.getTabIndex,
         label = _ref.label;
-    return React.createElement("div", {
+    return /*#__PURE__*/React.createElement("div", {
       className: "box"
-    }, React.createElement("a", _extends({
+    }, /*#__PURE__*/React.createElement("a", _extends({
       href: "#".concat(label)
     }, getRefProp(), getTabIndex()), label));
   };
 
   var App = function App() {
-    return React.createElement(React.Fragment, null, React.createElement("h1", null, "Parasol"), React.createElement(Parasol, {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h1", null, "Parasol"), /*#__PURE__*/React.createElement(Parasol, {
       breakpoints: [[1500, 6], [1200, 5], [900, 4], [600, 3], [0, 2]]
     }, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(function (i) {
-      return React.createElement(Box, {
+      return /*#__PURE__*/React.createElement(Box, {
         key: i,
         label: i
       });
-    })), React.createElement("h1", null, "Parasol2"), React.createElement(Parasol2, {
+    })), /*#__PURE__*/React.createElement("h1", null, "Parasol2"), /*#__PURE__*/React.createElement(Parasol2, {
       breakpoints: [[1500, 6], [1200, 5], [900, 4], [600, 3], [0, 2]]
     }, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(function (i) {
-      return React.createElement(Box, {
+      return /*#__PURE__*/React.createElement(Box, {
         key: i,
         label: i
       });
     })));
   };
 
-  ReactDOM.render(React.createElement(App, null), document.getElementById('example'));
+  ReactDOM.render( /*#__PURE__*/React.createElement(App, null), document.getElementById('example'));
 
 }(React));

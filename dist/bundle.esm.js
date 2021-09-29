@@ -1,6 +1,44 @@
 import { useEffect, createRef, createElement, cloneElement, Component, useRef, useReducer, useCallback, useMemo, Fragment, memo } from 'react';
 import memoize from 'memoize-one';
 
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+
+    if (enumerableOnly) {
+      symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+    }
+
+    keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+
+    if (i % 2) {
+      ownKeys(Object(source), true).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
+    } else if (Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    } else {
+      ownKeys(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+  }
+
+  return target;
+}
+
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -38,25 +76,6 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-    var ownKeys = Object.keys(source);
-
-    if (typeof Object.getOwnPropertySymbols === 'function') {
-      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-      }));
-    }
-
-    ownKeys.forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    });
-  }
-
-  return target;
-}
-
 function _inherits(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
@@ -88,6 +107,19 @@ function _setPrototypeOf(o, p) {
   return _setPrototypeOf(o, p);
 }
 
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 function _assertThisInitialized(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -99,13 +131,34 @@ function _assertThisInitialized(self) {
 function _possibleConstructorReturn(self, call) {
   if (call && (typeof call === "object" || typeof call === "function")) {
     return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
   }
 
   return _assertThisInitialized(self);
 }
 
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf(Derived),
+        result;
+
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf(this).constructor;
+
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+
+    return _possibleConstructorReturn(this, result);
+  };
+}
+
 function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
 }
 
 function _arrayWithHoles(arr) {
@@ -113,13 +166,17 @@ function _arrayWithHoles(arr) {
 }
 
 function _iterableToArrayLimit(arr, i) {
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+  if (_i == null) return;
   var _arr = [];
   var _n = true;
   var _d = false;
-  var _e = undefined;
+
+  var _s, _e;
 
   try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
       _arr.push(_s.value);
 
       if (i && _arr.length === i) break;
@@ -138,8 +195,25 @@ function _iterableToArrayLimit(arr, i) {
   return _arr;
 }
 
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+  return arr2;
+}
+
 function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
 //      
@@ -187,17 +261,17 @@ styleInject(css);
 var debounce = function debounce(fn) {
   return fn;
 };
-var Parasol =
-/*#__PURE__*/
-function (_React$Component) {
+var Parasol = /*#__PURE__*/function (_React$Component) {
   _inherits(Parasol, _React$Component);
+
+  var _super = _createSuper(Parasol);
 
   function Parasol(props) {
     var _this;
 
     _classCallCheck(this, Parasol);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Parasol).call(this, props));
+    _this = _super.call(this, props);
     _this.state = {
       animating: false,
       animationDirection: null,
@@ -205,15 +279,15 @@ function (_React$Component) {
       pageSize: _this.computePageSize(),
       touchXStart: 0
     };
-    _this.firstElement = createRef();
-    _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.moveRight = _this.moveRight.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.firstElement = /*#__PURE__*/createRef();
+    _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized(_this));
+    _this.moveRight = _this.moveRight.bind(_assertThisInitialized(_this));
     _this.pages = memoize(_this.pages);
-    _this.resizeHandler = debounce(_this.pageSizeHandler.bind(_assertThisInitialized(_assertThisInitialized(_this))), _this.props.resizeDebounceDelay);
+    _this.resizeHandler = debounce(_this.pageSizeHandler.bind(_assertThisInitialized(_this)), _this.props.resizeDebounceDelay);
     _this.splitBreakpoints = memoize(_this.splitBreakpoints);
-    _this.startTouch = _this.startTouch.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.touchDrag = _this.touchDrag.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.wheelHandler = _this.wheelHandler.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.startTouch = _this.startTouch.bind(_assertThisInitialized(_this));
+    _this.touchDrag = _this.touchDrag.bind(_assertThisInitialized(_this));
+    _this.wheelHandler = _this.wheelHandler.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -307,15 +381,13 @@ function (_React$Component) {
     key: "computePageSize",
     value: function computePageSize() {
       // !
-      // Make sure the document is available
-      if (document.documentElement) {
-        // Get the window width
-        var width = document.documentElement.clientWidth; // Split breakpoints into their individual parts
-
-        var dims = this.splitBreakpoints(this.props.breakpoints); // Determine the possible window sizes
+      // Make sure the window is available
+      if (window) {
+        // Split breakpoints into their individual parts
+        var dims = this.splitBreakpoints(this.props.breakpoints); // Determine the possible window sizes by testing them as media queries
 
         var sKeys = dims.widths.filter(function (w) {
-          return width > w;
+          return window.matchMedia("(min-width: {w}px)").matches;
         }); // Select the largest and get the associated page size
 
         return dims.sizes[dims.widths.length - sKeys.length];
@@ -462,21 +534,21 @@ function (_React$Component) {
         containerHandler = this.paginationEndHandler(newPage);
       }
 
-      return createElement("div", {
+      return /*#__PURE__*/createElement("div", {
         className: "parasol parasol-carousel",
         onMouseEnter: this.props.onMouseEnter,
         onMouseLeave: this.props.onMouseLeave,
         onMouseMove: this.props.onMouseMove,
         onMouseOut: this.props.onMouseOut,
         onMouseOver: this.props.onMouseOver
-      }, createElement("button", {
+      }, /*#__PURE__*/createElement("button", {
         className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
         onClick: prevHandler,
         tabIndex: this.props.prevTabIndex || 0,
         "aria-label": this.props.previousLabel || 'Previous Items'
-      }), createElement("div", {
+      }), /*#__PURE__*/createElement("div", {
         className: "parasol-window"
-      }, createElement("div", {
+      }, /*#__PURE__*/createElement("div", {
         className: this.containerClass(),
         onTouchStart: touchStartHandler,
         onTouchMove: touchMoveHandler,
@@ -512,8 +584,8 @@ function (_React$Component) {
             };
           }
         };
-        return cloneElement(el, elementProps);
-      }))), createElement("button", {
+        return /*#__PURE__*/cloneElement(el, elementProps);
+      }))), /*#__PURE__*/createElement("button", {
         className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
         onClick: nextHandler,
         tabIndex: this.props.nextTabIndex || 0,
@@ -602,14 +674,14 @@ function useShakeDisable() {
 
 function CoreStyles() {
   var styles = "\n    .parasol {\n      position: relative;\n      margin: 0 -6px;\n      touch-action: pan-y;\n    }\n\n    .parasol.parasol-carousel {\n      margin: 0;\n      padding: 0 4%;\n    }\n\n    .parasol-cap {\n      position: absolute;\n      top: 0;\n      right: 0;\n      width: 4%;\n      height: 100%;\n      text-align: center;\n      font-size: 4em;\n      z-index: 2;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n      padding-top: 25px;\n      text-transform: uppercase;\n      cursor: pointer;\n    }\n\n    .parasol-cap-left {\n      left: 0;\n    }\n\n    .parasol-cap-right {\n      right: 0;\n    }\n\n    .parasol-window {\n      overflow-x: visible;\n    }\n\n    .parasol-container {\n      white-space: nowrap;\n    }\n\n    .parasol-carousel .parasol-container.overflow {\n     transform: translate(-100%, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating {\n      transition: transform 1s ease 0s;\n    }\n\n    .parasol-carousel .parasol-container.animating-left {\n     transform: translate(0, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating-right {\n     transform: translate(-200%, 0);\n    }\n  ";
-  return createElement("style", {
+  return /*#__PURE__*/createElement("style", {
     dangerouslySetInnerHTML: {
       __html: styles
     }
   });
 }
 
-var CoreStyles$1 = memo(CoreStyles);
+var CoreStyles$1 = /*#__PURE__*/memo(CoreStyles);
 
 // containing the individual values respectively.
 
@@ -735,7 +807,7 @@ var Parasol2 = function Parasol2(_ref) {
   var firstElement = useRef(null);
 
   var _useReducer = useReducer(function (state, newState) {
-    return _objectSpread({}, state, newState);
+    return _objectSpread2(_objectSpread2({}, state), newState);
   }, {
     animating: false,
     animationComplete: false,
@@ -901,25 +973,25 @@ var Parasol2 = function Parasol2(_ref) {
       return paginationEndHandler(newPage)(e);
     }
   }, [animating, animationDirection, pageCount]);
-  return createElement(Fragment, null, createElement(CoreStyles$1, null), createElement("style", {
+  return /*#__PURE__*/createElement(Fragment, null, /*#__PURE__*/createElement(CoreStyles$1, null), /*#__PURE__*/createElement("style", {
     dangerouslySetInnerHTML: {
       __html: containerCSS
     }
-  }), createElement("div", {
+  }), /*#__PURE__*/createElement("div", {
     className: "parasol parasol-carousel ".concat(name),
     onMouseEnter: onMouseEnter,
     onMouseLeave: onMouseLeave,
     onMouseMove: onMouseMove,
     onMouseOut: onMouseOut,
     onMouseOver: onMouseOver
-  }, createElement("button", {
+  }, /*#__PURE__*/createElement("button", {
     className: "parasol-cap parasol-cap-left ".concat(hasOverflow && 'parasol-control' || ''),
     onClick: prevHandler,
     tabIndex: prevTabIndex,
     "aria-label": previousLabel
-  }), createElement("div", {
+  }), /*#__PURE__*/createElement("div", {
     className: "parasol-window"
-  }, createElement("div", {
+  }, /*#__PURE__*/createElement("div", {
     className: containerClass,
     onTouchStart: touchStartHandler,
     onTouchMove: touchMoveHandler,
@@ -955,8 +1027,8 @@ var Parasol2 = function Parasol2(_ref) {
         };
       }
     };
-    return cloneElement(el, elementProps);
-  }))), createElement("button", {
+    return /*#__PURE__*/cloneElement(el, elementProps);
+  }))), /*#__PURE__*/createElement("button", {
     className: "parasol-cap parasol-cap-right ".concat(hasOverflow && 'parasol-control' || ''),
     onClick: nextHandler,
     tabIndex: nextTabIndex,
