@@ -387,7 +387,7 @@ var Parasol = /*#__PURE__*/function (_React$Component) {
         var dims = this.splitBreakpoints(this.props.breakpoints); // Determine the possible window sizes by testing them as media queries
 
         var sKeys = dims.widths.filter(function (w) {
-          return window.matchMedia("(min-width: {w}px)").matches;
+          return window.matchMedia("(min-width: ".concat(w, "px)")).matches;
         }); // Select the largest and get the associated page size
 
         return dims.sizes[dims.widths.length - sKeys.length];
@@ -720,7 +720,7 @@ function computePageSize(breakpoints) {
     var dims = splitBreakpoints(breakpoints); // Determine the possible window sizes
 
     var sKeys = dims.widths.filter(function (w) {
-      return window.matchMedia("(min-width: {w}px)").matches;
+      return window.matchMedia("(min-width: ".concat(w, "px)")).matches;
     }); // Select the largest and get the associated page size
 
     return dims.sizes[dims.widths.length - sKeys.length];

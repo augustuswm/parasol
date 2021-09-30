@@ -55,7 +55,7 @@ function computePageSize(breakpoints: Array<Breakpoint>): number {
 
     // Determine the possible window sizes
     let sKeys = dims.widths.filter(w => {
-      return window.matchMedia(`(min-width: {w}px)`).matches;
+      return window.matchMedia(`(min-width: ${w}px)`).matches;
     });
 
     // Select the largest and get the associated page size

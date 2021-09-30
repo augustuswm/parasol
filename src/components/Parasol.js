@@ -156,7 +156,7 @@ export class Parasol extends React.Component<ParasolProps, ParasolState> {
 
       // Determine the possible window sizes by testing them as media queries
       let sKeys = dims.widths.filter(w => {
-        return window.matchMedia(`(min-width: {w}px)`).matches;
+        return window.matchMedia(`(min-width: ${w}px)`).matches;
       });
 
       // Select the largest and get the associated page size
