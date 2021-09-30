@@ -1,6 +1,6 @@
-import Parasol, { Parasol2 } from './../../dist/bundle';
+import Parasol, { Parasol2 } from './../../dist/bundle.esm';
 
-let Box = function({ getRefProp, getTabIndex, label }) {
+let Box = function ({ getRefProp, getTabIndex, label }) {
   return <div className="box">
     <a href={`#${label}`} {...getRefProp()} {...getTabIndex()}>
       {label}
@@ -8,7 +8,7 @@ let Box = function({ getRefProp, getTabIndex, label }) {
   </div>;
 };
 
-let App = function() {
+let App = function () {
   return <React.Fragment>
     <h1>Parasol</h1>
     <Parasol breakpoints={[[1500, 6], [1200, 5], [900, 4], [600, 3], [0, 2]]}>

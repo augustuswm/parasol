@@ -72,6 +72,44 @@
     return result;
   }
 
+  function ownKeys$1(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+
+      if (enumerableOnly) {
+        symbols = symbols.filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+      }
+
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2$1(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys$1(Object(source), true).forEach(function (key) {
+          _defineProperty$1(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys$1(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
   function _classCallCheck$1(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -109,25 +147,6 @@
     return obj;
   }
 
-  function _objectSpread$1(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
-
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
-      }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty$1(target, key, source[key]);
-      });
-    }
-
-    return target;
-  }
-
   function _inherits$1(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function");
@@ -159,6 +178,19 @@
     return _setPrototypeOf$1(o, p);
   }
 
+  function _isNativeReflectConstruct$1() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function _assertThisInitialized$1(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -170,13 +202,34 @@
   function _possibleConstructorReturn$1(self, call) {
     if (call && (_typeof(call) === "object" || typeof call === "function")) {
       return call;
+    } else if (call !== void 0) {
+      throw new TypeError("Derived constructors may only return object or undefined");
     }
 
     return _assertThisInitialized$1(self);
   }
 
+  function _createSuper$1(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct$1();
+
+    return function _createSuperInternal() {
+      var Super = _getPrototypeOf$1(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf$1(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn$1(this, result);
+    };
+  }
+
   function _slicedToArray$1(arr, i) {
-    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _nonIterableRest$1();
+    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest$1();
   }
 
   function _arrayWithHoles$1(arr) {
@@ -184,13 +237,17 @@
   }
 
   function _iterableToArrayLimit$1(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+    if (_i == null) return;
     var _arr = [];
     var _n = true;
     var _d = false;
-    var _e = undefined;
+
+    var _s, _e;
 
     try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
         _arr.push(_s.value);
 
         if (i && _arr.length === i) break;
@@ -209,8 +266,27 @@
     return _arr;
   }
 
+  function _unsupportedIterableToArray$1(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray$1(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen);
+  }
+
+  function _arrayLikeToArray$1(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+
   function _nonIterableRest$1() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   } //      
 
 
@@ -263,12 +339,14 @@
   var Parasol = /*#__PURE__*/function (_React$Component) {
     _inherits$1(Parasol, _React$Component);
 
+    var _super = _createSuper$1(Parasol);
+
     function Parasol(props) {
       var _this;
 
       _classCallCheck$1(this, Parasol);
 
-      _this = _possibleConstructorReturn$1(this, _getPrototypeOf$1(Parasol).call(this, props));
+      _this = _super.call(this, props);
       _this.state = {
         animating: false,
         animationDirection: null,
@@ -277,14 +355,14 @@
         touchXStart: 0
       };
       _this.firstElement = /*#__PURE__*/react.createRef();
-      _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
-      _this.moveRight = _this.moveRight.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
+      _this.moveLeft = _this.moveLeft.bind(_assertThisInitialized$1(_this));
+      _this.moveRight = _this.moveRight.bind(_assertThisInitialized$1(_this));
       _this.pages = index(_this.pages);
-      _this.resizeHandler = debounce(_this.pageSizeHandler.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this))), _this.props.resizeDebounceDelay);
+      _this.resizeHandler = debounce(_this.pageSizeHandler.bind(_assertThisInitialized$1(_this)), _this.props.resizeDebounceDelay);
       _this.splitBreakpoints = index(_this.splitBreakpoints);
-      _this.startTouch = _this.startTouch.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
-      _this.touchDrag = _this.touchDrag.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
-      _this.wheelHandler = _this.wheelHandler.bind(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
+      _this.startTouch = _this.startTouch.bind(_assertThisInitialized$1(_this));
+      _this.touchDrag = _this.touchDrag.bind(_assertThisInitialized$1(_this));
+      _this.wheelHandler = _this.wheelHandler.bind(_assertThisInitialized$1(_this));
       return _this;
     }
 
@@ -378,15 +456,13 @@
       key: "computePageSize",
       value: function computePageSize() {
         // !
-        // Make sure the document is available
-        if (document.documentElement) {
-          // Get the window width
-          var width = document.documentElement.clientWidth; // Split breakpoints into their individual parts
-
-          var dims = this.splitBreakpoints(this.props.breakpoints); // Determine the possible window sizes
+        // Make sure the window is available
+        if (window) {
+          // Split breakpoints into their individual parts
+          var dims = this.splitBreakpoints(this.props.breakpoints); // Determine the possible window sizes by testing them as media queries
 
           var sKeys = dims.widths.filter(function (w) {
-            return width > w;
+            return window.matchMedia("(min-width: {w}px)").matches;
           }); // Select the largest and get the associated page size
 
           return dims.sizes[dims.widths.length - sKeys.length];
@@ -643,7 +719,7 @@
     resizeDebounceDelay: 250,
     sensitivity: 40,
     onScroll: noop
-  };
+  }; //      
 
   function useShakeDisable() {
     function shakeHandler(event) {
@@ -667,9 +743,19 @@
         };
       }
     }, []);
-  } // Splits apart a (width, page size) array in to two arrays, widths and sizes,
-  // containing the individual values respectively.
+  } //      
 
+
+  function CoreStyles() {
+    var styles = "\n    .parasol {\n      position: relative;\n      margin: 0 -6px;\n      touch-action: pan-y;\n    }\n\n    .parasol.parasol-carousel {\n      margin: 0;\n      padding: 0 4%;\n    }\n\n    .parasol-cap {\n      position: absolute;\n      top: 0;\n      right: 0;\n      width: 4%;\n      height: 100%;\n      text-align: center;\n      font-size: 4em;\n      z-index: 2;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n      padding-top: 25px;\n      text-transform: uppercase;\n      cursor: pointer;\n    }\n\n    .parasol-cap-left {\n      left: 0;\n    }\n\n    .parasol-cap-right {\n      right: 0;\n    }\n\n    .parasol-window {\n      overflow-x: visible;\n    }\n\n    .parasol-container {\n      white-space: nowrap;\n    }\n\n    .parasol-carousel .parasol-container.overflow {\n     transform: translate(-100%, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating {\n      transition: transform 1s ease 0s;\n    }\n\n    .parasol-carousel .parasol-container.animating-left {\n     transform: translate(0, 0);\n    }\n\n    .parasol-carousel .parasol-container.animating-right {\n     transform: translate(-200%, 0);\n    }\n  ";
+    return /*#__PURE__*/react.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: styles
+      }
+    });
+  }
+
+  var CoreStyles$1 = /*#__PURE__*/react.memo(CoreStyles); // containing the individual values respectively.
 
   var splitBreakpoints = index(function (breakpoints) {
     var base = {
@@ -700,24 +786,20 @@
 
 
   function computePageSize(breakpoints) {
-    // Make sure the document is available
-    if (typeof document !== 'undefined' && document.documentElement) {
-      // Get the window width
-      var width = document.documentElement.clientWidth; // Split breakpoints into their individual parts
+    // Make sure the window is available
+    if (typeof window !== 'undefined') {
+      // Split breakpoints into their individual parts
+      var dims = splitBreakpoints(breakpoints); // Determine the possible window sizes
 
-      var _dims = splitBreakpoints(breakpoints); // Determine the possible window sizes
-
-
-      var sKeys = _dims.widths.filter(function (w) {
-        return width > w;
+      var sKeys = dims.widths.filter(function (w) {
+        return window.matchMedia("(min-width: {w}px)").matches;
       }); // Select the largest and get the associated page size
 
-
-      return _dims.sizes[_dims.widths.length - sKeys.length];
+      return dims.sizes[dims.widths.length - sKeys.length];
     } // If the document is not available, then default to the largest page size
 
 
-    return dims.sizes.reduce(function (size, breakpoint) {
+    return breakpoints.reduce(function (size, breakpoint) {
       return breakpoint[1] > size ? breakpoint[1] : size;
     }, 0);
   } // Given a number of elements and a desired number of elements per page,
@@ -795,7 +877,7 @@
     var firstElement = react.useRef(null);
 
     var _useReducer = react.useReducer(function (state, newState) {
-      return _objectSpread$1({}, state, newState);
+      return _objectSpread2$1(_objectSpread2$1({}, state), newState);
     }, {
       animating: false,
       animationComplete: false,
@@ -917,10 +999,6 @@
       return computePageSizeCSS(breakpoints);
     }, [breakpoints]);
     var containerClass = react.useMemo(function (_) {
-      var animating = state.animating,
-          animationDirection = state.animationDirection,
-          pageSize = state.pageSize;
-      var hasOverflow = children.length > pageSize;
       var containerClass = "parasol-container";
 
       if (hasOverflow) {
@@ -933,7 +1011,7 @@
       }
 
       return containerClass;
-    }, [animating, animationDirection, pageSize]);
+    }, [animating, animationDirection, hasOverflow]);
     var prevHandler = react.useCallback(function (_) {
       return !animating && moveLeft();
     }, [animating]);
@@ -965,7 +1043,11 @@
         return paginationEndHandler(newPage)(e);
       }
     }, [animating, animationDirection, pageCount]);
-    return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement("style", null, containerCSS), /*#__PURE__*/react.createElement("div", {
+    return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement(CoreStyles$1, null), /*#__PURE__*/react.createElement("style", {
+      dangerouslySetInnerHTML: {
+        __html: containerCSS
+      }
+    }), /*#__PURE__*/react.createElement("div", {
       className: "parasol parasol-carousel ".concat(name),
       onMouseEnter: onMouseEnter,
       onMouseLeave: onMouseLeave,
