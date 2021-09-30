@@ -14,7 +14,7 @@ import type { Breakpoint, Dimensions, ParasolProps, ParasolState } from "../type
 const splitBreakpoints = memoize((breakpoints: Array<Breakpoint>): Dimensions => {
   let base = { widths: [], sizes: [] };
 
-  return breakpoints.reduce(function(dimensions: Dimensions, breakpoint: Breakpoint) {
+  return breakpoints.reduce(function (dimensions: Dimensions, breakpoint: Breakpoint) {
     dimensions.widths.push(breakpoint[0]);
     dimensions.sizes.push(breakpoint[1]);
     return dimensions;
@@ -47,24 +47,23 @@ function computePageSizeCSS(breakpoints: Array<Breakpoint>): string {
 // option is selected.
 function computePageSize(breakpoints: Array<Breakpoint>): number {
 
-  // Make sure the document is available
-  if (typeof document !== 'undefined' && document.documentElement) {
+  // Make sure the window is available
+  if (typeof window !== 'undefined') {
 
     // Split breakpoints into their individual parts
     let dims = splitBreakpoints(breakpoints);
 
-    // Get the window width
-    let width = document.documentElement.clientWidth;
-
     // Determine the possible window sizes
-    let sKeys = dims.widths.filter(w => width > w);
+    let sKeys = dims.widths.filter(w => {
+      return window.matchMedia(`(min-width: {w}px)`).matches;
+    });
 
     // Select the largest and get the associated page size
     return dims.sizes[dims.widths.length - sKeys.length];
   }
 
   // If the document is not available, then default to the largest page size
-  return breakpoints.reduce(function(size: number, breakpoint: Breakpoint) {
+  return breakpoints.reduce(function (size: number, breakpoint: Breakpoint) {
     return breakpoint[1] > size ? breakpoint[1] : size;
   }, 0);
 }
@@ -142,7 +141,7 @@ const Parasol2 = function Parasol2({
 
   const firstElement = useRef(null);
   const [state, setState]: [ParasolState, Function] = useReducer(
-    (state, newState) => ({...state, ...newState}),
+    (state, newState) => ({ ...state, ...newState }),
     {
       animating: false,
       animationComplete: false,
@@ -172,16 +171,16 @@ const Parasol2 = function Parasol2({
 
     // Once mounted, bind the window resize handler
     typeof window !== 'undefined' &&
-    typeof window.addEventListener === 'function' &&
-    window.addEventListener('resize', pageSizeHandler);
+      typeof window.addEventListener === 'function' &&
+      window.addEventListener('resize', pageSizeHandler);
 
     // Run the resize handler a single time on mount
     pageSizeHandler();
 
     return _ => {
       typeof window !== 'undefined' &&
-      typeof window.removeEventListener === 'function' &&
-      window.removeEventListener('resize', pageSizeHandler);
+        typeof window.removeEventListener === 'function' &&
+        window.removeEventListener('resize', pageSizeHandler);
     }
   }, [pageSize, breakpoints]);
 
@@ -192,225 +191,225 @@ const Parasol2 = function Parasol2({
   }, [animationComplete]);
 
   const moveLeft: (void => void) = useCallback((): void => {
-      onScroll && typeof onScroll === 'function' && onScroll();
-      setState({ animating: true, animationComplete: false, animationDirection: 'left' });
-    },
+    onScroll && typeof onScroll === 'function' && onScroll();
+    setState({ animating: true, animationComplete: false, animationDirection: 'left' });
+  },
     [onScroll]
   );
 
-  const moveRight: (void => void) = useCallback((): void => {
-      onScroll && typeof onScroll === 'function' && onScroll();
-      setState({ animating: true, animationComplete: false, animationDirection: 'right' });
-    },
-    [onScroll]
-  );
+const moveRight: (void => void) = useCallback((): void => {
+  onScroll && typeof onScroll === 'function' && onScroll();
+  setState({ animating: true, animationComplete: false, animationDirection: 'right' });
+},
+  [onScroll]
+);
 
-  const wheelHandler: ((event: WheelEvent) => void) = useCallback(
-    (event: WheelEvent): void => {
-      if (!animating && hasOverflow) {
-        event.deltaX < -sensitivity && moveLeft() ||
+const wheelHandler: ((event: WheelEvent) => void) = useCallback(
+  (event: WheelEvent): void => {
+    if (!animating && hasOverflow) {
+      event.deltaX < -sensitivity && moveLeft() ||
         event.deltaX > sensitivity && moveRight();
-      }
-    },
-    [sensitivity, moveLeft, moveRight, animating, hasOverflow]
+    }
+  },
+  [sensitivity, moveLeft, moveRight, animating, hasOverflow]
+);
+
+const paginationEndHandler: (number => (SyntheticTransitionEvent <*> => void)) = useCallback(
+  (page: number): (SyntheticTransitionEvent<*> => void) => {
+  return function (event: SyntheticTransitionEvent<*>): void {
+    if (event.target === event.currentTarget) {
+      setState({ animating: false, animationComplete: true, animationDirection: null, page: page });
+    }
+  };
+},
+[]
   );
 
-  const paginationEndHandler: (number => (SyntheticTransitionEvent<*> => void)) = useCallback(
-    (page: number): (SyntheticTransitionEvent<*> => void) => {
-      return function(event: SyntheticTransitionEvent<*>): void {
-        if (event.target === event.currentTarget) {
-          setState({ animating: false, animationComplete: true, animationDirection: null, page: page });
-        }
-      };
-    },
-    []
-  );
+let touchStartHandler: (SyntheticTouchEvent<*> => void) = useCallback(
+  (event: SyntheticTouchEvent<*>): void => {
+    if (!animating && hasOverflow) {
 
-  let touchStartHandler: (SyntheticTouchEvent<*> => void) = useCallback(
-    (event: SyntheticTouchEvent<*>): void => {
-      if (!animating && hasOverflow) {
-
-        // If there are no touch events, fail out
-        if (!event.touches || event.touches.length < 1) {
-          return;
-        }
-
-        let startX = event.touches.item(0).clientX;
-
-        setState({touchXStart: startX});
-      }
-    },
-    [animating, hasOverflow]
-  );
-
-  let touchMoveHandler: (SyntheticTouchEvent<*> => void) = useCallback(
-    (event: SyntheticTouchEvent<*>): void => {
-      if (!animating && hasOverflow) {
-
-        // If there are no touch events, fail out
-        if (!event.touches || event.touches.length < 1) {
-          return;
-        }
-
-        // If there is no starting x coordinate, fail out
-        if (state.touchXStart === null) {
-          return;
-        }
-
-        // Listen for any point in a touch drag that should trigger the action
-        if ((event.touches.item(0).clientX - state.touchXStart) > sensitivity) {
-          moveLeft();
-        } else if ((event.touches.item(0).clientX - state.touchXStart) < -sensitivity) {
-          moveRight();
-        }
-      }
-    },
-    [animating, hasOverflow, touchXStart, sensitivity]
-  );
-
-  let name: string = useMemo(
-    _ => {
-       return computeName(breakpoints);
-    },
-    [breakpoints]
-  )
-
-  let containerCSS: string = useMemo(
-    _ => {
-      return computePageSizeCSS(breakpoints);
-    },
-    [breakpoints]
-  );
-
-  let containerClass: string = useMemo(
-    _ => {
-      let containerClass = `parasol-container`;
-
-      if (hasOverflow) {
-        containerClass += ' overflow';
+      // If there are no touch events, fail out
+      if (!event.touches || event.touches.length < 1) {
+        return;
       }
 
-      if (animating && animationDirection) {
-        containerClass += ' animating';
-        containerClass += ` animating-${animationDirection}`;
+      let startX = event.touches.item(0).clientX;
+
+      setState({ touchXStart: startX });
+    }
+  },
+  [animating, hasOverflow]
+);
+
+let touchMoveHandler: (SyntheticTouchEvent<*> => void) = useCallback(
+  (event: SyntheticTouchEvent<*>): void => {
+    if (!animating && hasOverflow) {
+
+      // If there are no touch events, fail out
+      if (!event.touches || event.touches.length < 1) {
+        return;
       }
 
-      return containerClass;
-    },
-    [animating, animationDirection, hasOverflow]
-  );
-
-  let prevHandler = useCallback(
-    _ => !animating && moveLeft(),
-    [animating]
-  );
-  let nextHandler = useCallback(
-    _ => !animating && moveRight(),
-    [animating]
-  );
-
-  // If there are more elements than a page size, then pagination is needed.
-  // To ensure there are enough elements for pagination, generate a list with
-  // three full pages
-  let elements = useMemo(
-    _ => hasOverflow ? computeElementList(children, page, pageSize) : children,
-    [hasOverflow, children, page, pageSize]
-  );
-
-  let containerHandler = useCallback(
-    e => {
-
-      // If the bar is in an animating state, then handle adding the animation
-      // styling, and post animation updates
-      if (animating && animationDirection) {
-
-        // Compute the next page that should be shown
-        let newPage = animationDirection === 'right' ? page + 1 : page - 1;
-
-        // Perform bounds checks to make sure the next page is valid. If it is
-        // not then the new page value should wrap
-        if (newPage > pageCount) {
-          newPage = 1;
-        } else if (newPage < 1) {
-          newPage = pageCount;
-        }
-
-        // Create the transition end handler based on the page that is being
-        // animating to
-        return paginationEndHandler(newPage)(e);
+      // If there is no starting x coordinate, fail out
+      if (state.touchXStart === null) {
+        return;
       }
-    },
-    [animating, animationDirection, pageCount]
-  );
 
-  return <React.Fragment>
-    <CoreStyles />
-    <style dangerouslySetInnerHTML={{__html: containerCSS}} />
-    <div
-      className={`parasol parasol-carousel ${name}`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onMouseMove={onMouseMove}
-      onMouseOut={onMouseOut}
-      onMouseOver={onMouseOver}
-    >
-      <button
-        className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`}
-        onClick={prevHandler}
-        tabIndex={prevTabIndex}
-        aria-label={previousLabel} />
-      <div className="parasol-window">
-        <div
-          className={containerClass}
-          onTouchStart={touchStartHandler}
-          onTouchMove={touchMoveHandler}
-          onWheel={wheelHandler}
-          onTransitionEnd={containerHandler}>
-          {
-            elements.map((el, i) => {
-              let viewPosition;
+      // Listen for any point in a touch drag that should trigger the action
+      if ((event.touches.item(0).clientX - state.touchXStart) > sensitivity) {
+        moveLeft();
+      } else if ((event.touches.item(0).clientX - state.touchXStart) < -sensitivity) {
+        moveRight();
+      }
+    }
+  },
+  [animating, hasOverflow, touchXStart, sensitivity]
+);
 
-              if (hasOverflow) {
-                viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
-              } else {
-                viewPosition = i;
+let name: string = useMemo(
+  _ => {
+    return computeName(breakpoints);
+  },
+  [breakpoints]
+)
+
+let containerCSS: string = useMemo(
+  _ => {
+    return computePageSizeCSS(breakpoints);
+  },
+  [breakpoints]
+);
+
+let containerClass: string = useMemo(
+  _ => {
+    let containerClass = `parasol-container`;
+
+    if (hasOverflow) {
+      containerClass += ' overflow';
+    }
+
+    if (animating && animationDirection) {
+      containerClass += ' animating';
+      containerClass += ` animating-${animationDirection}`;
+    }
+
+    return containerClass;
+  },
+  [animating, animationDirection, hasOverflow]
+);
+
+let prevHandler = useCallback(
+  _ => !animating && moveLeft(),
+  [animating]
+);
+let nextHandler = useCallback(
+  _ => !animating && moveRight(),
+  [animating]
+);
+
+// If there are more elements than a page size, then pagination is needed.
+// To ensure there are enough elements for pagination, generate a list with
+// three full pages
+let elements = useMemo(
+  _ => hasOverflow ? computeElementList(children, page, pageSize) : children,
+  [hasOverflow, children, page, pageSize]
+);
+
+let containerHandler = useCallback(
+  e => {
+
+    // If the bar is in an animating state, then handle adding the animation
+    // styling, and post animation updates
+    if (animating && animationDirection) {
+
+      // Compute the next page that should be shown
+      let newPage = animationDirection === 'right' ? page + 1 : page - 1;
+
+      // Perform bounds checks to make sure the next page is valid. If it is
+      // not then the new page value should wrap
+      if (newPage > pageCount) {
+        newPage = 1;
+      } else if (newPage < 1) {
+        newPage = pageCount;
+      }
+
+      // Create the transition end handler based on the page that is being
+      // animating to
+      return paginationEndHandler(newPage)(e);
+    }
+  },
+  [animating, animationDirection, pageCount]
+);
+
+return <React.Fragment>
+  <CoreStyles />
+  <style dangerouslySetInnerHTML={{ __html: containerCSS }} />
+  <div
+    className={`parasol parasol-carousel ${name}`}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+    onMouseMove={onMouseMove}
+    onMouseOut={onMouseOut}
+    onMouseOver={onMouseOver}
+  >
+    <button
+      className={`parasol-cap parasol-cap-left ${hasOverflow && 'parasol-control' || ''}`}
+      onClick={prevHandler}
+      tabIndex={prevTabIndex}
+      aria-label={previousLabel} />
+    <div className="parasol-window">
+      <div
+        className={containerClass}
+        onTouchStart={touchStartHandler}
+        onTouchMove={touchMoveHandler}
+        onWheel={wheelHandler}
+        onTransitionEnd={containerHandler}>
+        {
+          elements.map((el, i) => {
+            let viewPosition;
+
+            if (hasOverflow) {
+              viewPosition = i - pageSize >= 0 && i + pageSize < elements.length ? i - pageSize : null;
+            } else {
+              viewPosition = i;
+            }
+
+            let baseKey = typeof el.key === 'string' ? el.key : '';
+
+            let elementProps = {
+              key: `${baseKey}-${i}`,
+              animating: animating,
+              position: i,
+              viewPosition: viewPosition,
+              pageSize: pageSize,
+              page: page,
+              // DEPRECATED
+              innerRef: viewPosition === 0 ? firstElement : undefined,
+              getRefProp: _ => {
+                return {
+                  ref: viewPosition === 0 ? firstElement : null
+                };
+              },
+              getTabIndex: _ => {
+                return {
+                  tabIndex: viewPosition !== null ? itemTabIndex : -1
+                };
               }
+            };
 
-              let baseKey = typeof el.key === 'string' ? el.key : '';
-
-              let elementProps = {
-                key: `${baseKey}-${i}`,
-                animating: animating,
-                position: i,
-                viewPosition: viewPosition,
-                pageSize: pageSize,
-                page: page,
-                // DEPRECATED
-                innerRef: viewPosition === 0 ? firstElement : undefined,
-                getRefProp: _ => {
-                  return {
-                    ref: viewPosition === 0 ? firstElement : null
-                  };
-                },
-                getTabIndex: _ => {
-                  return {
-                    tabIndex: viewPosition !== null ? itemTabIndex: -1
-                  };
-                }
-              };
-
-              return React.cloneElement(el, elementProps);
-            })
-          }
-        </div>
+            return React.cloneElement(el, elementProps);
+          })
+        }
       </div>
-      <button
-        className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`}
-        onClick={nextHandler}
-        tabIndex={nextTabIndex}
-        aria-label={nextLabel} />
     </div>
-  </React.Fragment>;
+    <button
+      className={`parasol-cap parasol-cap-right ${hasOverflow && 'parasol-control' || ''}`}
+      onClick={nextHandler}
+      tabIndex={nextTabIndex}
+      aria-label={nextLabel} />
+  </div>
+</React.Fragment>;
 };
 
 export { Parasol2 }

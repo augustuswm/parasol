@@ -719,15 +719,13 @@
 
 
   function computePageSize(breakpoints) {
-    // Make sure the document is available
-    if (typeof document !== 'undefined' && document.documentElement) {
+    // Make sure the window is available
+    if (typeof window !== 'undefined') {
       // Split breakpoints into their individual parts
-      var dims = splitBreakpoints(breakpoints); // Get the window width
-
-      var width = document.documentElement.clientWidth; // Determine the possible window sizes
+      var dims = splitBreakpoints(breakpoints); // Determine the possible window sizes
 
       var sKeys = dims.widths.filter(function (w) {
-        return width > w;
+        return window.matchMedia("(min-width: {w}px)").matches;
       }); // Select the largest and get the associated page size
 
       return dims.sizes[dims.widths.length - sKeys.length];
